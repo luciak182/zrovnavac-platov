@@ -218,8 +218,9 @@
 <footer>© 2025 PorovnejPlat.cz · Data jsou orientační</footer>
 
 <script>
-// DATABÁZE
+// KOMPLETNÍ DATABÁZE (VŠECHNA DATA)
 const DATA = [
+  // --- IT & Technologie ---
   { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:45000, med:55000, max:65000 },
   { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:65000, med:85000, max:105000 },
   { title:"Frontend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:100000, med:125000, max:150000 },
@@ -227,23 +228,75 @@ const DATA = [
   { title:"Backend Developer", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:45000, med:58000, max:70000 },
   { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:75000, med:95000, max:120000 },
   { title:"Backend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:110000, med:140000, max:170000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Moravskoslezský kraj", min:60000, med:75000, max:90000 },
+  { title:"Fullstack Developer", sector:"IT & Technologie", level:"Medior", region:"Celá ČR", min:70000, med:90000, max:115000 },
   { title:"DevOps Engineer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:80000, med:100000, max:130000 },
+  { title:"DevOps Engineer", sector:"IT & Technologie", level:"Senior", region:"Celá ČR", min:110000, med:140000, max:180000 },
   { title:"QA Tester (Automatizace)", sector:"IT & Technologie", level:"Medior", region:"Praha", min:60000, med:75000, max:95000 },
+  { title:"QA Tester (Manuální)", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:35000, med:45000, max:55000 },
   { title:"Data Analyst", sector:"IT & Technologie", level:"Medior", region:"Praha", min:65000, med:80000, max:100000 },
+  { title:"Data Scientist", sector:"IT & Technologie", level:"Senior", region:"Celá ČR", min:95000, med:120000, max:160000 },
+  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:40000, med:50000, max:60000 },
   { title:"UX/UI Designer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:60000, med:75000, max:95000 },
+  { title:"IT Projektový manažer", sector:"IT & Technologie", level:"Medior", region:"Celá ČR", min:70000, med:90000, max:115000 },
+  { title:"IT Projektový manažer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:100000, med:130000, max:160000 },
+
+  // --- Finance & Bankovnictví ---
   { title:"Účetní", sector:"Finance & Bankovnictví", level:"Junior", region:"Celá ČR", min:30000, med:38000, max:45000 },
   { title:"Účetní", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:40000, med:48000, max:58000 },
   { title:"Hlavní účetní", sector:"Finance & Bankovnictví", level:"Senior", region:"Praha", min:65000, med:85000, max:110000 },
+  { title:"Mzdová účetní", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:42000, med:52000, max:65000 },
+  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Junior", region:"Praha", min:45000, med:55000, max:65000 },
+  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:85000 },
+  { title:"Financial Controller", sector:"Finance & Bankovnictví", level:"Medior", region:"Praha", min:70000, med:85000, max:105000 },
+  { title:"Financial Controller", sector:"Finance & Bankovnictví", level:"Senior", region:"Celá ČR", min:90000, med:115000, max:140000 },
+
+  // --- Marketing & Reklama ---
+  { title:"Marketingový specialista", sector:"Marketing & Reklama", level:"Junior", region:"Celá ČR", min:35000, med:42000, max:52000 },
   { title:"Marketingový specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:45000, med:55000, max:70000 },
+  { title:"Marketing Manager", sector:"Marketing & Reklama", level:"Senior", region:"Praha", min:70000, med:95000, max:130000 },
   { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:50000, med:65000, max:80000 },
+  { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Senior", region:"Praha", min:75000, med:95000, max:120000 },
+  { title:"SEO Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:45000, med:58000, max:75000 },
+  { title:"Copywriter", sector:"Marketing & Reklama", level:"Junior", region:"Celá ČR", min:30000, med:38000, max:48000 },
+  { title:"Copywriter", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:42000, med:52000, max:65000 },
+  { title:"Social Media Manager", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:40000, med:50000, max:65000 },
+
+  // --- Zdravotnictví ---
+  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Junior", region:"Celá ČR", min:32000, med:40000, max:48000 },
   { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Praha", min:42000, med:52000, max:65000 },
+  { title:"Vrchní sestra", sector:"Zdravotnictví", level:"Senior", region:"Celá ČR", min:55000, med:68000, max:85000 },
+  { title:"Lékař – absolvent", sector:"Zdravotnictví", level:"Junior", region:"Celá ČR", min:45000, med:55000, max:65000 },
   { title:"Lékař – se specializací", sector:"Zdravotnictví", level:"Senior", region:"Celá ČR", min:80000, med:110000, max:150000 },
+  { title:"Farmaceut", sector:"Zdravotnictví", level:"Medior", region:"Celá ČR", min:50000, med:62000, max:75000 },
+
+  // --- Strojírenství & Výroba ---
+  { title:"Konstruktér", sector:"Strojírenství", level:"Junior", region:"Celá ČR", min:38000, med:46000, max:55000 },
   { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Jihomoravský kraj", min:48000, med:60000, max:75000 },
+  { title:"Technolog", sector:"Strojírenství", level:"Medior", region:"Celá ČR", min:45000, med:55000, max:70000 },
   { title:"Inženýr kvality", sector:"Výroba", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+  { title:"Mistr výroby", sector:"Výroba", level:"Senior", region:"Moravskoslezský kraj", min:45000, med:55000, max:70000 },
+
+  // --- Logistika & Doprava ---
+  { title:"Dispečer dopravy", sector:"Logistika & Doprava", level:"Medior", region:"Celá ČR", min:35000, med:45000, max:55000 },
   { title:"Logistik", sector:"Logistika & Doprava", level:"Medior", region:"Praha", min:45000, med:55000, max:68000 },
+  { title:"Manažer logistiky", sector:"Logistika & Doprava", level:"Senior", region:"Celá ČR", min:65000, med:85000, max:110000 },
+
+  // --- Stavebnictví ---
   { title:"Stavbyvedoucí", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:90000 },
+  { title:"Projektant", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+
+  // --- Obchod & Prodej ---
+  { title:"Vedoucí prodejny", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:38000, med:48000, max:60000 },
   { title:"Obchodní zástupce (B2B)", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:45000, med:65000, max:90000 },
+  { title:"Key Account Manager", sector:"Obchod & Prodej", level:"Senior", region:"Praha", min:75000, med:100000, max:140000 },
+
+  // --- HR & Personalistika ---
   { title:"HR Specialista", sector:"HR & Personalistika", level:"Medior", region:"Celá ČR", min:42000, med:52000, max:65000 },
+  { title:"HR Business Partner", sector:"HR & Personalistika", level:"Senior", region:"Celá ČR", min:65000, med:85000, max:110000 },
+
+  // --- Právo ---
+  { title:"Advokátní koncipient", sector:"Právo", level:"Junior", region:"Praha", min:35000, med:45000, max:55000 },
   { title:"Advokát", sector:"Právo", level:"Senior", region:"Praha", min:80000, med:120000, max:180000 }
 ];
 
@@ -251,10 +304,99 @@ const sectorEl = document.getElementById('f-sector');
 const roleEl = document.getElementById('f-role');
 let hasSubmittedEmail = false;
 
+// Dynamické plnění rolí podle odvětví
 function populateRoles(sector) {
   const roles = [...new Set(DATA.filter(d => !sector || d.sector === sector).map(d => d.title))].sort();
   roleEl.innerHTML = '<option value="">Všechny pozice</option>';
   roles.forEach(r => {
     const o = document.createElement('option');
+    o.value = r;
     o.textContent = r;
-    role
+    roleEl.appendChild(o);
+  });
+}
+
+sectorEl.addEventListener('change', () => populateRoles(sectorEl.value));
+populateRoles(''); // Inicializace při načtení
+
+function openModal() { document.getElementById('email-modal').style.display = 'flex'; }
+function closeModal() { document.getElementById('email-modal').style.display = 'none'; }
+
+function handleCompareClick() {
+  if (!hasSubmittedEmail) {
+    openModal();
+  } else {
+    doFilter();
+  }
+}
+
+// Odeslání formuláře
+document.getElementById('lead-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('user-email').value;
+  hasSubmittedEmail = true;
+
+  closeModal();
+  doFilter(); 
+
+  // Odeslat na SheetDB
+  fetch('https://sheetdb.io/api/v1/0ylt9aa69vqk2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ 
+          "data": [{ 
+              "Email": email, 
+              "Timestamp": new Date().toLocaleString('cs-CZ'),
+              "Zdroj": "Web PorovnejPlat.cz"
+          }] 
+      })
+  }).catch(err => console.log("SheetDB error (ignored)"));
+
+  if(typeof fbq !== 'undefined') fbq('track', 'Lead');
+  if(typeof gtag !== 'undefined') gtag('event', 'generate_lead', { 'email': email });
+});
+
+function doFilter() {
+    const sector = sectorEl.value;
+    const role = roleEl.value;
+    const level = document.getElementById('f-level').value;
+    const region = document.getElementById('f-region').value;
+
+    const filtered = DATA.filter(d =>
+        (!sector || d.sector === sector) &&
+        (!role || d.title === role) &&
+        (!level || d.level === level) &&
+        (!region || d.region === region || d.region === 'Celá ČR')
+    );
+    renderCards(filtered);
+}
+
+function renderCards(data) {
+    const grid = document.getElementById('results');
+    grid.innerHTML = '';
+    
+    if(data.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--muted)">Pro tento výběr nemáme zatím dostatek dat.</div>';
+        return;
+    }
+
+    data.forEach(d => {
+        const levelClass = d.level === 'Junior' ? 'level-junior' : d.level === 'Medior' ? 'level-medior' : 'level-senior';
+        const card = document.createElement('div');
+        card.className = 'salary-card';
+        card.innerHTML = `
+            <span class="card-level ${levelClass}">${d.level}</span>
+            <h3 style="font-family:'Syne'; margin-bottom:5px;">${d.title}</h3>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:15px;">${d.sector} · ${d.region}</p>
+            <div class="salary-range">
+                <div><span class="s-label">Min</span><span class="s-value">${(d.min/1000).toFixed(0)}k</span></div>
+                <div><span class="s-label">Průměr</span><span class="s-value mid">${(d.med/1000).toFixed(0)}k</span></div>
+                <div><span class="s-label">Max</span><span class="s-value">${(d.max/1000).toFixed(0)}k</span></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+</script>
+</body>
+</html>

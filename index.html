@@ -4,9 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PorovnejPlat.cz – Srovnávač mezd v ČR</title>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8XH9RB240N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8XH9RB240N');
+  </script>
+
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'TVOJE_ID_PIXELU'); 
+    fbq('track', 'PageView');
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  
   <style>
     :root {
       --bg: #0d0f14;
@@ -15,35 +35,73 @@
       --border: #2a2f40;
       --accent: #4fffb0;
       --accent2: #7b61ff;
-      --accent3: #ff6b6b;
       --text: #e8eaf0;
       --muted: #7a7f96;
-      --card-glow: rgba(79, 255, 176, 0.06);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
+      /* 1. ÚPRAVA FONTU - cca o 10% vyšší a vzdušnejší */
+      line-height: 1.8; 
+      letter-spacing: 0.03em;
     }
 
-    /* NOISE TEXTURE */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
+    /* POPUP MODAL STYLY */
+    #email-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
     }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      border-radius: 24px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .modal-box h3 { font-family: 'Syne', sans-serif; margin-bottom: 1rem; font-size: 1.6rem; color: var(--accent); }
+    .modal-box p { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; }
+    .modal-input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: white;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      outline: none;
+    }
+    .modal-input:focus { border-color: var(--accent); }
+    .modal-btn {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 255, 176, 0.3); }
 
-    /* NAV */
+    /* PÔVODNÝ DESIGN UPRAVENÝ PRE POPUP */
     nav {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -53,409 +111,61 @@
       border-bottom: 1px solid var(--border);
     }
     .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1.35rem;
-      color: var(--accent);
-      letter-spacing: -0.5px;
-      text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem;
+      color: var(--accent); text-decoration: none;
     }
-    .logo span { color: var(--text); }
-    nav .nav-links { display: flex; gap: 2rem; }
-    nav .nav-links a {
-      color: var(--muted); font-size: 0.9rem; text-decoration: none;
-      transition: color .2s;
-    }
-    nav .nav-links a:hover { color: var(--text); }
-
-    /* HERO */
-    .hero {
-      position: relative;
-      padding: 6rem 2rem 4rem;
-      text-align: center;
-      overflow: hidden;
-    }
-    .hero-glow {
-      position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
-      width: 700px; height: 400px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(79,255,176,0.13) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
-      margin-bottom: 1.2rem;
-    }
-    .hero h1 em {
-      font-style: normal;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      color: var(--muted);
-      font-size: 1.1rem;
-      max-width: 520px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.6;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: 0.45rem;
-      background: rgba(79,255,176,0.08);
-      border: 1px solid rgba(79,255,176,0.2);
-      color: var(--accent);
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 1.8rem;
-    }
-    .badge::before { content: '●'; font-size: 0.55rem; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    /* STATS BAR */
-    .stats-bar {
-      display: flex; justify-content: center; gap: 3rem;
-      flex-wrap: wrap;
-      padding: 1.5rem 2rem 2rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.7rem; font-weight: 700;
-      color: var(--accent);
-    }
-    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
-
-    /* MAIN LAYOUT */
-    .main-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem 5rem;
-      position: relative; z-index: 1;
-    }
-
-    /* FILTER FORM */
-    .filter-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .filter-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-    }
-    .filter-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem; font-weight: 700;
-      margin-bottom: 1.5rem;
-    }
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .field label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.5rem;
-    }
-    .field select, .field input {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.72rem 1rem;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.92rem;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      appearance: none;
-      cursor: pointer;
-    }
-    .field select:focus, .field input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(79,255,176,0.1);
-    }
-    .field select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7f96' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      padding-right: 2.5rem;
-    }
+    .hero { padding: 6rem 2rem 4rem; text-align: center; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .main-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .filter-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; margin-bottom: 3rem; }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field select { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: white; padding: 0.9rem; border-radius: 12px; outline: none; cursor: pointer; }
+    
     .btn-compare {
-      display: flex; align-items: center; gap: 0.5rem;
-      background: var(--accent);
-      color: #0a0c10;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      padding: 0.8rem 1.8rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .2s;
-      white-space: nowrap;
-      align-self: flex-end;
+      background: var(--accent); color: #000; padding: 1.1rem 2.5rem; border: none; border-radius: 12px;
+      font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s;
     }
-    .btn-compare:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(79,255,176,0.25);
-    }
-    .btn-compare:active { transform: translateY(0); }
-    .filter-actions {
-      display: flex; align-items: flex-end; gap: 1rem;
-      margin-top: 1rem;
-    }
+    .btn-compare:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79, 255, 176, 0.2); }
 
-    /* RESULTS SECTION */
-    .results-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
-    }
-    .results-header h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.3rem; font-weight: 700;
-    }
-    .results-count {
-      font-size: 0.85rem; color: var(--muted);
-    }
-    .results-count strong { color: var(--accent); }
-
-    /* SALARY CARD */
-    .salary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1rem;
-    }
-    .salary-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      transition: border-color .2s, transform .2s, box-shadow .2s;
-      cursor: default;
-      position: relative;
-      overflow: hidden;
-    }
-    .salary-card:hover {
-      border-color: rgba(79,255,176,0.3);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(79,255,176,0.1);
-    }
-    .card-top {
-      display: flex; align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-    .card-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      line-height: 1.3;
-      margin-bottom: 0.25rem;
-    }
-    .card-meta { font-size: 0.8rem; color: var(--muted); }
-    .card-level {
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.25rem 0.7rem;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-    .level-junior { background: rgba(255,107,107,0.12); color: #ff6b6b; }
-    .level-medior { background: rgba(255,183,107,0.12); color: #ffb76b; }
-    .level-senior { background: rgba(79,255,176,0.12); color: var(--accent); }
-
-    .salary-range {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.5rem;
-      background: var(--surface2);
-      border-radius: 10px;
-      padding: 0.9rem 1rem;
-      margin-bottom: 1rem;
-    }
-    .salary-item { text-align: center; }
-    .salary-item .s-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .salary-item .s-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.02rem; font-weight: 700;
-      margin-top: 0.2rem;
-    }
-    .s-value.mid { color: var(--accent); font-size: 1.15rem; }
-
-    /* BAR CHART */
-    .bar-wrap { margin-bottom: 0.5rem; }
-    .bar-label {
-      display: flex; justify-content: space-between;
-      font-size: 0.75rem; color: var(--muted);
-      margin-bottom: 0.3rem;
-    }
-    .bar-track {
-      height: 6px;
-      background: var(--surface2);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%; border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .card-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 1rem;
-      padding-top: 0.9rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-    .card-footer .samples { display: flex; align-items: center; gap: 0.4rem; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-    .trend-up { color: #4fffb0; font-weight: 600; }
-    .trend-down { color: #ff6b6b; font-weight: 600; }
-
-    /* HIGHLIGHT CARD */
-    .salary-card.highlight {
-      border-color: rgba(79,255,176,0.35);
-      background: linear-gradient(135deg, var(--surface) 0%, rgba(79,255,176,0.04) 100%);
-    }
-    .highlight-badge {
-      position: absolute; top: 0; right: 0;
-      background: var(--accent);
-      color: #0a0c10;
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 0.3rem 0.8rem;
-      border-bottom-left-radius: 10px;
-      font-family: 'Syne', sans-serif;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    /* INSIGHT BOX */
-    .insight-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem 2rem;
-      margin-top: 2rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-    }
-    .insight-item {}
-    .insight-label {
-      font-size: 0.75rem; text-transform: uppercase;
-      letter-spacing: 0.07em; color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-    .insight-val {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.6rem; font-weight: 800;
-      color: var(--accent);
-    }
-    .insight-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
-
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 5rem 2rem;
-      color: var(--muted);
-      display: none;
-    }
-    .empty-state svg { opacity: 0.3; margin-bottom: 1rem; }
-    .empty-state p { font-size: 1rem; }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    /* ANIMATIONS */
-    .fade-in {
-      animation: fadeIn 0.5s ease both;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 640px) {
-      nav { padding: 1rem 1.2rem; }
-      nav .nav-links { display: none; }
-      .hero { padding: 4rem 1.2rem 2.5rem; }
-      .stats-bar { gap: 1.5rem; }
-      .filter-card { padding: 1.3rem; }
-      .main-wrap { padding: 2rem 1rem 4rem; }
-    }
+    .salary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; opacity: 0.4; pointer-events: none; transition: all 0.5s; }
+    .salary-grid.unlocked { opacity: 1; pointer-events: auto; }
+    
+    .salary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+    .salary-range { display: flex; justify-content: space-between; background: var(--surface2); padding: 1.2rem; border-radius: 12px; margin: 1.2rem 0; }
+    .s-value { font-weight: 700; font-family: 'Syne', sans-serif; font-size: 1.1rem; }
+    .s-value.mid { color: var(--accent); font-size: 1.3rem; }
+    
+    footer { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 4rem; }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="logo" href="#"><span>Porovnej</span>Plat</a>
-  <div class="nav-links">
-    <a href="#porovnat">Srovnávač</a>
-    <a href="#jak-to-funguje">Jak to funguje</a>
-    <a href="#faq">FAQ</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="badge">Aktualizováno Q1 2025</div>
-  <h1>Zjisti, co <em>skutečně</em><br/>vydělávají ostatní</h1>
-  <p>Porovnej svůj plat s průmyslovým průměrem v České republice. Data ze stovek reálných pracovních pozic.</p>
-</section>
-
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat">
-    <div class="stat-num" id="stat-jobs">—</div>
-    <div class="stat-label">pozic v databázi</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num" id="stat-sectors">12</div>
-    <div class="stat-label">odvětví</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num" id="stat-avg">—</div>
-    <div class="stat-label">průměrná mzda (Kč)</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">Q1 2025</div>
-    <div class="stat-label">poslední aktualizace</div>
+<div id="email-modal">
+  <div class="modal-box">
+    <h3>Odomknúť výsledky</h3>
+    <p>Zadajte svoj e-mail a my vám okamžite zobrazíme porovnanie platov pre rok 2025 v celej ČR.</p>
+    <form id="lead-form">
+      <input type="email" id="user-email" class="modal-input" placeholder="tvoj@email.cz" required>
+      <button type="submit" class="modal-btn">Zobraziť kompletné dáta</button>
+    </form>
+    <button onclick="closeModal()" style="margin-top:20px; background:none; border:none; color:var(--muted); cursor:pointer; text-decoration: underline; font-size: 0.8rem;">Zavrieť</button>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="main-wrap" id="porovnat">
+<nav>
+  <a class="logo" href="#"><span>Porovnej</span>Plat</a>
+</nav>
 
-  <!-- FILTER -->
+<section class="hero">
+  <h1>Zjisti, co <em>skutečně</em><br/>vydělávají ostatní</h1>
+  <p>Dáta zo stoviek reálnych pozícií aktualizované pre rok 2025.</p>
+</section>
+
+<div class="main-wrap">
   <div class="filter-card">
-    <div class="filter-title">🔍 Vyhledej a porovnej plat</div>
     <div class="filter-grid">
       <div class="field">
         <label>Odvětví</label>
@@ -464,303 +174,95 @@
           <option>IT & Technologie</option>
           <option>Finance & Bankovnictví</option>
           <option>Marketing & Reklama</option>
-          <option>Zdravotnictví</option>
-          <option>Strojírenství</option>
-          <option>Logistika & Doprava</option>
-          <option>Stavebnictví</option>
-          <option>Vzdělávání</option>
-          <option>Obchod & Prodej</option>
-          <option>Právo</option>
-          <option>HR & Personalistika</option>
-          <option>Výroba</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Pozice</label>
-        <select id="f-role">
-          <option value="">Všechny pozice</option>
         </select>
       </div>
       <div class="field">
         <label>Zkušenosti</label>
         <select id="f-level">
           <option value="">Všechny úrovně</option>
-          <option value="Junior">Junior (0–2 roky)</option>
-          <option value="Medior">Medior (2–5 let)</option>
-          <option value="Senior">Senior (5+ let)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Kraj</label>
-        <select id="f-region">
-          <option value="">Celá ČR</option>
-          <option>Praha</option>
-          <option>Jihomoravský kraj</option>
-          <option>Moravskoslezský kraj</option>
-          <option>Středočeský kraj</option>
-          <option>Plzeňský kraj</option>
-          <option>Ústecký kraj</option>
-          <option>Jihočeský kraj</option>
-          <option>Královéhradecký kraj</option>
-          <option>Zlínský kraj</option>
-          <option>Pardubický kraj</option>
-          <option>Olomoucký kraj</option>
-          <option>Vysočina</option>
-          <option>Liberecký kraj</option>
-          <option>Karlovarský kraj</option>
+          <option>Junior</option>
+          <option>Medior</option>
+          <option>Senior</option>
         </select>
       </div>
     </div>
-    <div class="filter-actions">
-      <button class="btn-compare" onclick="doFilter()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Porovnat platy
-      </button>
-      <button style="background:none;border:1px solid var(--border);color:var(--muted);padding:0.8rem 1.2rem;border-radius:10px;font-size:0.88rem;cursor:pointer;" onclick="resetFilter()">Reset</button>
-    </div>
+    <button class="btn-compare" onclick="openModal()">Porovnat platy</button>
   </div>
 
-  <!-- RESULTS -->
-  <div class="results-header">
-    <h2>Výsledky</h2>
-    <div class="results-count">Zobrazeno <strong id="count-shown">0</strong> pozic</div>
-  </div>
-
-  <div class="salary-grid" id="results"></div>
-  <div class="empty-state" id="empty-state">
-    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <p>Žádná data neodpovídají filtru. Zkuste jiný výběr.</p>
-  </div>
-
-  <!-- INSIGHT -->
-  <div class="insight-box" id="insight-box" style="display:none">
-    <div class="insight-item">
-      <div class="insight-label">Průměrná mzda (filtr)</div>
-      <div class="insight-val" id="ins-avg">—</div>
-      <div class="insight-sub">hrubá měsíční mzda</div>
-    </div>
-    <div class="insight-item">
-      <div class="insight-label">Nejlépe placená pozice</div>
-      <div class="insight-val" id="ins-top">—</div>
-      <div class="insight-sub" id="ins-top-name">—</div>
-    </div>
-    <div class="insight-item">
-      <div class="insight-label">Nejčastější rozsah</div>
-      <div class="insight-val" id="ins-range">—</div>
-      <div class="insight-sub">minimum – maximum</div>
-    </div>
-    <div class="insight-item">
-      <div class="insight-label">Počet pozic</div>
-      <div class="insight-val" id="ins-count">—</div>
-      <div class="insight-sub">odpovídá filtru</div>
+  <div class="salary-grid" id="results">
+    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 20px;">
+       Pre zobrazenie výsledkov kliknite na tlačidlo vyššie.
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
-  © 2025 PorovnejPlat · Data jsou orientační a slouží pouze pro informační účely · <a href="#" style="color:var(--muted)">Ochrana dat</a>
+  © 2025 PorovnejPlat.cz · Všetky práva vyhradené.
 </footer>
 
 <script>
-// ============================
-//  DATA
-// ============================
+// UKÁŽKOVÉ DÁTA
 const DATA = [
-  // IT
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:42000, med:52000, max:65000, samples:87, trend:"+8%", highlight:false },
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:62000, med:78000, max:95000, samples:143, trend:"+11%", highlight:true },
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:90000, med:108000, max:135000, samples:61, trend:"+7%", highlight:false },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:45000, med:56000, max:70000, samples:102, trend:"+9%", highlight:false },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:68000, med:85000, max:105000, samples:189, trend:"+12%", highlight:false },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:95000, med:118000, max:150000, samples:74, trend:"+10%", highlight:false },
-  { title:"DevOps Engineer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:72000, med:90000, max:115000, samples:58, trend:"+14%", highlight:false },
-  { title:"DevOps Engineer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:100000, med:125000, max:160000, samples:39, trend:"+16%", highlight:false },
-  { title:"Data Scientist", sector:"IT & Technologie", level:"Medior", region:"Praha", min:70000, med:88000, max:110000, samples:63, trend:"+15%", highlight:false },
-  { title:"Data Scientist", sector:"IT & Technologie", level:"Senior", region:"Praha", min:95000, med:120000, max:155000, samples:41, trend:"+18%", highlight:false },
-  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:38000, med:46000, max:58000, samples:77, trend:"+5%", highlight:false },
-  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:55000, med:68000, max:85000, samples:96, trend:"+7%", highlight:false },
-  { title:"Product Manager", sector:"IT & Technologie", level:"Medior", region:"Praha", min:75000, med:95000, max:120000, samples:54, trend:"+13%", highlight:false },
-  { title:"Projektový manažer IT", sector:"IT & Technologie", level:"Senior", region:"Praha", min:85000, med:105000, max:135000, samples:48, trend:"+8%", highlight:false },
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Jihomoravský kraj", min:52000, med:66000, max:82000, samples:67, trend:"+9%", highlight:false },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Jihomoravský kraj", min:57000, med:72000, max:90000, samples:89, trend:"+11%", highlight:false },
-  { title:"Softwarový architekt", sector:"IT & Technologie", level:"Senior", region:"Praha", min:110000, med:140000, max:180000, samples:29, trend:"+9%", highlight:false },
-  // Finance
-  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Junior", region:"Praha", min:40000, med:50000, max:62000, samples:65, trend:"+4%", highlight:false },
-  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Medior", region:"Praha", min:60000, med:74000, max:92000, samples:88, trend:"+5%", highlight:false },
-  { title:"Senior Controller", sector:"Finance & Bankovnictví", level:"Senior", region:"Praha", min:85000, med:105000, max:130000, samples:42, trend:"+6%", highlight:false },
-  { title:"Účetní", sector:"Finance & Bankovnictví", level:"Junior", region:"Celá ČR", min:28000, med:35000, max:44000, samples:203, trend:"+3%", highlight:false },
-  { title:"Hlavní účetní", sector:"Finance & Bankovnictví", level:"Senior", region:"Praha", min:65000, med:80000, max:100000, samples:56, trend:"+5%", highlight:false },
-  { title:"Risk Manager", sector:"Finance & Bankovnictví", level:"Senior", region:"Praha", min:90000, med:115000, max:145000, samples:31, trend:"+7%", highlight:false },
-  // Marketing
-  { title:"Marketing Manager", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:55000, med:68000, max:85000, samples:91, trend:"+6%", highlight:false },
-  { title:"SEO Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:42000, med:53000, max:66000, samples:74, trend:"+8%", highlight:false },
-  { title:"Copywriter", sector:"Marketing & Reklama", level:"Junior", region:"Praha", min:30000, med:38000, max:48000, samples:112, trend:"+3%", highlight:false },
-  { title:"Brand Manager", sector:"Marketing & Reklama", level:"Senior", region:"Praha", min:72000, med:90000, max:112000, samples:38, trend:"+7%", highlight:false },
-  { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:46000, med:58000, max:72000, samples:67, trend:"+9%", highlight:false },
-  // Zdravotnictví
-  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Praha", min:38000, med:46000, max:56000, samples:178, trend:"+12%", highlight:false },
-  { title:"Lékař – praktik", sector:"Zdravotnictví", level:"Senior", region:"Praha", min:70000, med:88000, max:115000, samples:44, trend:"+8%", highlight:false },
-  { title:"Farmaceut", sector:"Zdravotnictví", level:"Medior", region:"Praha", min:45000, med:56000, max:70000, samples:83, trend:"+5%", highlight:false },
-  // Strojírenství
-  { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Praha", min:50000, med:62000, max:78000, samples:95, trend:"+6%", highlight:false },
-  { title:"CNC programátor", sector:"Strojírenství", level:"Medior", region:"Moravskoslezský kraj", min:42000, med:52000, max:64000, samples:67, trend:"+7%", highlight:false },
-  { title:"Technolog", sector:"Strojírenství", level:"Senior", region:"Praha", min:65000, med:80000, max:100000, samples:51, trend:"+5%", highlight:false },
-  // Logistika
-  { title:"Logistik", sector:"Logistika & Doprava", level:"Medior", region:"Praha", min:40000, med:50000, max:63000, samples:108, trend:"+4%", highlight:false },
-  { title:"Dispečer", sector:"Logistika & Doprava", level:"Junior", region:"Celá ČR", min:28000, med:34000, max:42000, samples:145, trend:"+5%", highlight:false },
-  { title:"Vedoucí skladu", sector:"Logistika & Doprava", level:"Senior", region:"Praha", min:52000, med:65000, max:82000, samples:57, trend:"+6%", highlight:false },
-  // HR
-  { title:"HR Specialista", sector:"HR & Personalistika", level:"Medior", region:"Praha", min:45000, med:56000, max:70000, samples:88, trend:"+5%", highlight:false },
-  { title:"HR Business Partner", sector:"HR & Personalistika", level:"Senior", region:"Praha", min:68000, med:85000, max:108000, samples:49, trend:"+7%", highlight:false },
-  // Obchod
-  { title:"Obchodní zástupce", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:38000, med:52000, max:70000, samples:231, trend:"+6%", highlight:false },
-  { title:"Key Account Manager", sector:"Obchod & Prodej", level:"Senior", region:"Praha", min:65000, med:82000, max:105000, samples:76, trend:"+8%", highlight:false },
-  // Právo
-  { title:"Právník / jurist", sector:"Právo", level:"Junior", region:"Praha", min:35000, med:44000, max:56000, samples:54, trend:"+3%", highlight:false },
-  { title:"Firemní právník", sector:"Právo", level:"Senior", region:"Praha", min:80000, med:100000, max:130000, samples:37, trend:"+5%", highlight:false },
+  { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", min:45000, med:55000, max:68000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", min:70000, med:88000, max:110000 },
+  { title:"Marketing Manager", sector:"Marketing & Reklama", level:"Senior", min:75000, med:95000, max:125000 },
+  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Medior", min:55000, med:68000, max:85000 }
 ];
 
-// ============================
-//  ROLE DROPDOWN
-// ============================
-const sectorEl = document.getElementById('f-sector');
-const roleEl = document.getElementById('f-role');
-
-function populateRoles(sector) {
-  const roles = [...new Set(DATA.filter(d => !sector || d.sector === sector).map(d => d.title))].sort();
-  roleEl.innerHTML = '<option value="">Všechny pozice</option>';
-  roles.forEach(r => {
-    const o = document.createElement('option');
-    o.textContent = r;
-    roleEl.appendChild(o);
-  });
+function openModal() {
+    document.getElementById('email-modal').style.display = 'flex';
 }
 
-sectorEl.addEventListener('change', () => populateRoles(sectorEl.value));
-populateRoles('');
-
-// ============================
-//  STATS
-// ============================
-function fmt(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
-function fmtK(n) { return Math.round(n/1000) + ' tis.'; }
-
-document.getElementById('stat-jobs').textContent = DATA.length;
-const totalAvg = Math.round(DATA.reduce((s,d) => s + d.med, 0) / DATA.length);
-document.getElementById('stat-avg').textContent = fmtK(totalAvg);
-
-// ============================
-//  FILTER & RENDER
-// ============================
-function doFilter() {
-  const sector = sectorEl.value;
-  const role = roleEl.value;
-  const level = document.getElementById('f-level').value;
-  const region = document.getElementById('f-region').value;
-
-  let filtered = DATA.filter(d =>
-    (!sector || d.sector === sector) &&
-    (!role || d.title === role) &&
-    (!level || d.level === level) &&
-    (!region || d.region === region || d.region === 'Celá ČR')
-  );
-
-  renderCards(filtered);
+function closeModal() {
+    document.getElementById('email-modal').style.display = 'none';
 }
 
-function resetFilter() {
-  sectorEl.value = '';
-  roleEl.value = '';
-  document.getElementById('f-level').value = '';
-  document.getElementById('f-region').value = '';
-  populateRoles('');
-  renderCards(DATA);
+// LOGIKA ODOSLANIA FORMULÁRA
+document.getElementById('lead-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('user-email').value;
+
+    // --- SHEETDB UKLADANIE (Nahraďte URL svojím API z sheetdb.io) ---
+    fetch('https://sheetdb.io/api/v1/0ylt9aa69vqk2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "data": [{ "Email": email, "Timestamp": new Date().toLocaleString() }] })
+    }).finally(() => {
+        // Facebook Lead Event
+        if(typeof fbq !== 'undefined') { fbq('track', 'Lead'); }
+        
+        // Google Analytics Event (voliteľné)
+        gtag('event', 'generate_lead', { 'email': email });
+
+        closeModal();
+        renderResults();
+    });
+});
+
+function renderResults() {
+    const grid = document.getElementById('results');
+    grid.classList.add('unlocked');
+    grid.innerHTML = '';
+    
+    DATA.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'salary-card';
+        card.innerHTML = `
+            <h3 style="font-family:'Syne'; margin-bottom:5px;">${d.title}</h3>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:15px;">${d.sector} · ${d.level}</p>
+            <div class="salary-range">
+                <div style="text-align:center;"><small style="color:var(--muted)">Min</small><br/><span class="s-value">${d.min/1000}k</span></div>
+                <div style="text-align:center;"><small style="color:var(--muted)">Průměr</small><br/><span class="s-value mid">${d.med/1000}k</span></div>
+                <div style="text-align:center;"><small style="color:var(--muted)">Max</small><br/><span class="s-value">${d.max/1000}k</span></div>
+            </div>
+            <div style="height:4px; background:var(--surface2); border-radius:10px; overflow:hidden;">
+                <div style="width:70%; height:100%; background:linear-gradient(90deg, var(--accent2), var(--accent));"></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
 }
-
-const maxMed = Math.max(...DATA.map(d => d.med));
-
-function renderCards(data) {
-  const grid = document.getElementById('results');
-  const empty = document.getElementById('empty-state');
-  const box = document.getElementById('insight-box');
-
-  grid.innerHTML = '';
-
-  if (!data.length) {
-    empty.style.display = 'block';
-    box.style.display = 'none';
-    document.getElementById('count-shown').textContent = 0;
-    return;
-  }
-
-  empty.style.display = 'none';
-  document.getElementById('count-shown').textContent = data.length;
-
-  // Sort by median desc
-  const sorted = [...data].sort((a,b) => b.med - a.med);
-  const highlighted = sorted.find(d => d.highlight) || sorted[0];
-
-  sorted.forEach((d, i) => {
-    const isTop = d === highlighted;
-    const pct = Math.round((d.med / maxMed) * 100);
-    const levelClass = d.level === 'Junior' ? 'level-junior' : d.level === 'Medior' ? 'level-medior' : 'level-senior';
-    const trendClass = d.trend.startsWith('+') ? 'trend-up' : 'trend-down';
-
-    const card = document.createElement('div');
-    card.className = 'salary-card fade-in' + (isTop ? ' highlight' : '');
-    card.style.animationDelay = (i * 0.05) + 's';
-
-    card.innerHTML = `
-      ${isTop ? '<div class="highlight-badge">✦ Nejpoptávanější</div>' : ''}
-      <div class="card-top">
-        <div>
-          <div class="card-title">${d.title}</div>
-          <div class="card-meta">${d.sector} · ${d.region}</div>
-        </div>
-        <span class="card-level ${levelClass}">${d.level}</span>
-      </div>
-      <div class="salary-range">
-        <div class="salary-item">
-          <div class="s-label">Minimum</div>
-          <div class="s-value">${(d.min/1000).toFixed(0)}k</div>
-        </div>
-        <div class="salary-item">
-          <div class="s-label">Průměr</div>
-          <div class="s-value mid">${(d.med/1000).toFixed(0)}k</div>
-        </div>
-        <div class="salary-item">
-          <div class="s-label">Maximum</div>
-          <div class="s-value">${(d.max/1000).toFixed(0)}k</div>
-        </div>
-      </div>
-      <div class="bar-wrap">
-        <div class="bar-label"><span>vs. trh</span><span>${pct}%</span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-      </div>
-      <div class="card-footer">
-        <span class="samples"><span class="dot"></span>${d.samples} vzorků</span>
-        <span>Meziročně <span class="${trendClass}">${d.trend}</span></span>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-
-  // Insight box
-  const avg = Math.round(sorted.reduce((s,d) => s + d.med, 0) / sorted.length);
-  const top = sorted[0];
-  const minAll = Math.min(...sorted.map(d => d.min));
-  const maxAll = Math.max(...sorted.map(d => d.max));
-  document.getElementById('ins-avg').textContent = fmt(avg);
-  document.getElementById('ins-top').textContent = fmt(top.med);
-  document.getElementById('ins-top-name').textContent = top.title + ' · ' + top.level;
-  document.getElementById('ins-range').textContent = fmtK(minAll) + ' – ' + fmtK(maxAll);
-  document.getElementById('ins-count').textContent = sorted.length;
-  box.style.display = 'grid';
-}
-
-// Initial render
-renderCards(DATA);
 </script>
+
 </body>
 </html>

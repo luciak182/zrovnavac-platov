@@ -219,25 +219,101 @@
 <footer>© 2025 PorovnejPlat.cz · Data jsou orientační</footer>
 
 <script>
-// KOMPLETNÍ DATABÁZE (Původní široký seznam)
+// KOMPLETNÍ ROZŠÍŘENÁ DATABÁZE (cca 100 pozic pro rok 2025)
 const DATA = [
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:42000, med:52000, max:65000 },
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:62000, med:78000, max:95000 },
-  { title:"Frontend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:90000, med:108000, max:135000 },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:45000, med:56000, max:70000 },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:68000, med:85000, max:105000 },
-  { title:"Backend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:95000, med:118000, max:150000 },
-  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:55000, med:68000, max:85000 },
-  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Medior", region:"Praha", min:60000, med:74000, max:92000 },
-  { title:"Účetní", sector:"Finance & Bankovnictví", level:"Junior", region:"Celá ČR", min:28000, med:35000, max:44000 },
-  { title:"Marketing Manager", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:55000, med:68000, max:85000 },
-  { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:46000, med:58000, max:72000 },
-  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Praha", min:38000, med:46000, max:56000 },
-  { title:"Lékař – praktik", sector:"Zdravotnictví", level:"Senior", region:"Praha", min:70000, med:88000, max:115000 },
-  { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Praha", min:50000, med:62000, max:78000 },
-  { title:"Logistik", sector:"Logistika & Doprava", level:"Medior", region:"Praha", min:40000, med:50000, max:63000 },
-  { title:"HR Specialista", sector:"HR & Personalistika", level:"Medior", region:"Praha", min:45000, med:56000, max:70000 },
-  { title:"Obchodní zástupce", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:38000, med:52000, max:70000 }
+  // --- IT & Technologie ---
+  { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:45000, med:55000, max:65000 },
+  { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:65000, med:85000, max:105000 },
+  { title:"Frontend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:100000, med:125000, max:150000 },
+  { title:"Frontend Developer", sector:"IT & Technologie", level:"Medior", region:"Jihomoravský kraj", min:60000, med:75000, max:95000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:45000, med:58000, max:70000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:75000, med:95000, max:120000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:110000, med:140000, max:170000 },
+  { title:"Backend Developer", sector:"IT & Technologie", level:"Medior", region:"Moravskoslezský kraj", min:60000, med:75000, max:90000 },
+  { title:"Fullstack Developer", sector:"IT & Technologie", level:"Medior", region:"Celá ČR", min:70000, med:90000, max:115000 },
+  { title:"DevOps Engineer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:80000, med:100000, max:130000 },
+  { title:"DevOps Engineer", sector:"IT & Technologie", level:"Senior", region:"Celá ČR", min:110000, med:140000, max:180000 },
+  { title:"QA Tester (Automatizace)", sector:"IT & Technologie", level:"Medior", region:"Praha", min:60000, med:75000, max:95000 },
+  { title:"QA Tester (Manuální)", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:35000, med:45000, max:55000 },
+  { title:"Data Analyst", sector:"IT & Technologie", level:"Medior", region:"Praha", min:65000, med:80000, max:100000 },
+  { title:"Data Scientist", sector:"IT & Technologie", level:"Senior", region:"Celá ČR", min:95000, med:120000, max:160000 },
+  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Junior", region:"Celá ČR", min:40000, med:50000, max:60000 },
+  { title:"UX/UI Designer", sector:"IT & Technologie", level:"Medior", region:"Praha", min:60000, med:75000, max:95000 },
+  { title:"IT Projektový manažer", sector:"IT & Technologie", level:"Medior", region:"Celá ČR", min:70000, med:90000, max:115000 },
+  { title:"IT Projektový manažer", sector:"IT & Technologie", level:"Senior", region:"Praha", min:100000, med:130000, max:160000 },
+
+  // --- Finance & Bankovnictví ---
+  { title:"Účetní", sector:"Finance & Bankovnictví", level:"Junior", region:"Celá ČR", min:30000, med:38000, max:45000 },
+  { title:"Účetní", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:40000, med:48000, max:58000 },
+  { title:"Hlavní účetní", sector:"Finance & Bankovnictví", level:"Senior", region:"Praha", min:65000, med:85000, max:110000 },
+  { title:"Mzdová účetní", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:42000, med:52000, max:65000 },
+  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Junior", region:"Praha", min:45000, med:55000, max:65000 },
+  { title:"Finanční analytik", sector:"Finance & Bankovnictví", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:85000 },
+  { title:"Financial Controller", sector:"Finance & Bankovnictví", level:"Medior", region:"Praha", min:70000, med:85000, max:105000 },
+  { title:"Financial Controller", sector:"Finance & Bankovnictví", level:"Senior", region:"Celá ČR", min:90000, med:115000, max:140000 },
+
+  // --- Marketing & Reklama ---
+  { title:"Marketingový specialista", sector:"Marketing & Reklama", level:"Junior", region:"Celá ČR", min:35000, med:42000, max:52000 },
+  { title:"Marketingový specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:45000, med:55000, max:70000 },
+  { title:"Marketing Manager", sector:"Marketing & Reklama", level:"Senior", region:"Praha", min:70000, med:95000, max:130000 },
+  { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:50000, med:65000, max:80000 },
+  { title:"PPC Specialista", sector:"Marketing & Reklama", level:"Senior", region:"Praha", min:75000, med:95000, max:120000 },
+  { title:"SEO Specialista", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:45000, med:58000, max:75000 },
+  { title:"Copywriter", sector:"Marketing & Reklama", level:"Junior", region:"Celá ČR", min:30000, med:38000, max:48000 },
+  { title:"Copywriter", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:42000, med:52000, max:65000 },
+  { title:"Social Media Manager", sector:"Marketing & Reklama", level:"Medior", region:"Celá ČR", min:40000, med:50000, max:65000 },
+
+  // --- Zdravotnictví ---
+  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Junior", region:"Celá ČR", min:32000, med:40000, max:48000 },
+  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Praha", min:42000, med:52000, max:65000 },
+  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Celá ČR", min:38000, med:46000, max:55000 },
+  { title:"Vrchní sestra", sector:"Zdravotnictví", level:"Senior", region:"Celá ČR", min:55000, med:68000, max:85000 },
+  { title:"Lékař – absolvent", sector:"Zdravotnictví", level:"Junior", region:"Celá ČR", min:45000, med:55000, max:65000 },
+  { title:"Lékař – se specializací", sector:"Zdravotnictví", level:"Senior", region:"Celá ČR", min:80000, med:110000, max:150000 },
+  { title:"Farmaceut", sector:"Zdravotnictví", level:"Medior", region:"Celá ČR", min:50000, med:62000, max:75000 },
+
+  // --- Strojírenství & Výroba ---
+  { title:"Konstruktér", sector:"Strojírenství", level:"Junior", region:"Celá ČR", min:38000, med:46000, max:55000 },
+  { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Jihomoravský kraj", min:48000, med:60000, max:75000 },
+  { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Plzeňský kraj", min:45000, med:58000, max:72000 },
+  { title:"Technolog", sector:"Strojírenství", level:"Medior", region:"Celá ČR", min:45000, med:55000, max:70000 },
+  { title:"Inženýr kvality", sector:"Výroba", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+  { title:"Inženýr kvality", sector:"Výroba", level:"Senior", region:"Středočeský kraj", min:65000, med:80000, max:100000 },
+  { title:"CNC Operátor", sector:"Výroba", level:"Medior", region:"Celá ČR", min:35000, med:45000, max:55000 },
+  { title:"Mistr výroby", sector:"Výroba", level:"Senior", region:"Moravskoslezský kraj", min:45000, med:55000, max:70000 },
+
+  // --- Logistika & Doprava ---
+  { title:"Skladník / Manipulant", sector:"Logistika & Doprava", level:"Junior", region:"Celá ČR", min:28000, med:34000, max:42000 },
+  { title:"Dispečer dopravy", sector:"Logistika & Doprava", level:"Medior", region:"Celá ČR", min:35000, med:45000, max:55000 },
+  { title:"Logistik", sector:"Logistika & Doprava", level:"Medior", region:"Praha", min:45000, med:55000, max:68000 },
+  { title:"Logistik", sector:"Logistika & Doprava", level:"Medior", region:"Středočeský kraj", min:42000, med:50000, max:62000 },
+  { title:"Manažer logistiky", sector:"Logistika & Doprava", level:"Senior", region:"Celá ČR", min:65000, med:85000, max:110000 },
+
+  // --- Stavebnictví ---
+  { title:"Stavbyvedoucí", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:90000 },
+  { title:"Stavbyvedoucí", sector:"Stavebnictví", level:"Senior", region:"Praha", min:80000, med:100000, max:130000 },
+  { title:"Rozpočtář", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:45000, med:55000, max:70000 },
+  { title:"Projektant", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+
+  // --- Obchod & Prodej ---
+  { title:"Prodavač / Pokladní", sector:"Obchod & Prodej", level:"Junior", region:"Celá ČR", min:26000, med:32000, max:38000 },
+  { title:"Vedoucí prodejny", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:38000, med:48000, max:60000 },
+  { title:"Obchodní zástupce (B2B)", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:45000, med:65000, max:90000 },
+  { title:"Key Account Manager", sector:"Obchod & Prodej", level:"Senior", region:"Praha", min:75000, med:100000, max:140000 },
+  { title:"Key Account Manager", sector:"Obchod & Prodej", level:"Senior", region:"Celá ČR", min:60000, med:85000, max:120000 },
+
+  // --- HR & Personalistika ---
+  { title:"HR Specialista", sector:"HR & Personalistika", level:"Medior", region:"Celá ČR", min:42000, med:52000, max:65000 },
+  { title:"Recruiter / Talent Sourcer", sector:"HR & Personalistika", level:"Junior", region:"Celá ČR", min:35000, med:45000, max:55000 },
+  { title:"Recruiter (IT)", sector:"HR & Personalistika", level:"Medior", region:"Praha", min:55000, med:70000, max:90000 },
+  { title:"HR Business Partner", sector:"HR & Personalistika", level:"Senior", region:"Celá ČR", min:65000, med:85000, max:110000 },
+  { title:"HR Business Partner", sector:"HR & Personalistika", level:"Senior", region:"Praha", min:80000, med:105000, max:135000 },
+
+  // --- Právo ---
+  { title:"Advokátní koncipient", sector:"Právo", level:"Junior", region:"Praha", min:35000, med:45000, max:55000 },
+  { title:"Advokátní koncipient", sector:"Právo", level:"Junior", region:"Celá ČR", min:30000, med:38000, max:48000 },
+  { title:"Podnikový právník", sector:"Právo", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:90000 },
+  { title:"Advokát", sector:"Právo", level:"Senior", region:"Praha", min:80000, med:120000, max:180000 }
 ];
 
 const sectorEl = document.getElementById('f-sector');

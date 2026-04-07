@@ -336,22 +336,37 @@ populateRoles('');
 function openModal() { document.getElementById('email-modal').style.display = 'flex'; }
 function closeModal() { document.getElementById('email-modal').style.display = 'none'; }
 
-// Odeslání formuláře (GTM, Pixel, SheetDB)
+// Odeslání formuláře s tvým REÁLNÝM API a opravou zobrazení
 document.getElementById('lead-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const email = document.getElementById('user-email').value;
 
-    fetch('https://sheetdb.io/api/v1/VASE_API_URL', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "data": [{ "Email": email, "Time": new Date().toLocaleString() }] })
-    }).finally(() => {
-        // Marketingové konverze
-        if(typeof fbq !== 'undefined') fbq('track', 'Lead');
-        gtag('event', 'generate_lead', { 'email': email });
+    // 1. OKAMŽITÉ ZOBRAZENÍ VÝSLEDKŮ (Uživatel nečeká na pomalé API)
+    closeModal();
+    doFilter(); 
 
-        closeModal();
-        doFilter(); // Spuštění filtru
+    // 2. ODESLÁNÍ DO TVÉHO SHEETDB (https://sheetdb.io/api/v1/0ylt9aa69vqk2)
+    fetch('https://sheetdb.io/api/v1/0ylt9aa69vqk2', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+            "data": [{ 
+                "Email": email, 
+                "Timestamp": new Date().toLocaleString('cs-CZ'),
+                "Zdroj": "Web PorovnejPlat.cz"
+            }] 
+        })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Data úspěšně uložena do SheetDB:', data))
+    .catch(err => console.error('Chyba při ukládání do SheetDB:', err));
+
+    // 3. MARKETINGOVÉ MĚŘENÍ
+    if(typeof fbq !== 'undefined') fbq('track', 'Lead');
+    if(typeof gtag !== 'undefined') gtag('event', 'generate_lead', { 'email': email });
     });
 });
 

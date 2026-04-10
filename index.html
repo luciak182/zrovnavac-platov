@@ -168,7 +168,7 @@
       <div class="field">
         <label>Pozice</label>
         <select id="f-role">
-          <option value="">Nejdříve vyberte odvětví</option>
+          <option value="">Všechny pozice</option>
         </select>
       </div>
       <div class="field">
@@ -214,7 +214,7 @@
 <footer>© 2025 PorovnejPlat.cz · Data jsou orientační</footer>
 
 <script>
-// --- DATABÁZE (Všechna tvá data zpět) ---
+// --- DATABÁZE ---
 const DATA = [
   // IT & Technologie
   { title:"Frontend Developer", sector:"IT & Technologie", level:"Junior", region:"Praha", min:45000, med:55000, max:65000 },
@@ -245,4 +245,127 @@ const DATA = [
   { title:"Copywriter", sector:"Marketing & Reklama", level:"Medior", region:"Praha", min:42000, med:52000, max:65000 },
 
   // Zdravotnictví
-  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Celá ČR", min:38000, med:46000
+  { title:"Všeobecná sestra", sector:"Zdravotnictví", level:"Medior", region:"Celá ČR", min:38000, med:46000, max:55000 },
+  { title:"Lékař", sector:"Zdravotnictví", level:"Senior", region:"Celá ČR", min:80000, med:110000, max:150000 },
+
+  // Výroba & Strojírenství
+  { title:"Konstruktér", sector:"Strojírenství", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+  { title:"Inženýr kvality", sector:"Výroba", level:"Medior", region:"Celá ČR", min:48000, med:60000, max:75000 },
+  { title:"Stavbyvedoucí", sector:"Stavebnictví", level:"Medior", region:"Celá ČR", min:55000, med:70000, max:90000 },
+  
+  // Obchod & HR
+  { title:"Obchodní zástupce", sector:"Obchod & Prodej", level:"Medior", region:"Celá ČR", min:45000, med:65000, max:90000 },
+  { title:"HR Specialista", sector:"HR & Personalistika", level:"Medior", region:"Celá ČR", min:42000, med:52000, max:65000 }
+];
+
+const sectorEl = document.getElementById('f-sector');
+const roleEl = document.getElementById('f-role');
+let hasSubmittedEmail = false;
+
+// Dynamické plnění rolí
+function populateRoles(sector) {
+  const roles = [...new Set(DATA.filter(d => !sector || d.sector === sector).map(d => d.title))].sort();
+  
+  roleEl.innerHTML = '<option value="">Všechny pozice</option>';
+  roles.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r; // Toto zajistí, že se dá podle pozice vyhledávat
+    o.textContent = r;
+    roleEl.appendChild(o);
+  });
+}
+
+// Obnova rolí při změně odvětví
+sectorEl.addEventListener('change', () => {
+  populateRoles(sectorEl.value);
+  if (hasSubmittedEmail) doFilter();
+});
+
+roleEl.addEventListener('change', () => {
+  if (hasSubmittedEmail) doFilter();
+});
+
+// Inicializace
+populateRoles('');
+
+function openModal() { document.getElementById('email-modal').style.display = 'flex'; }
+function closeModal() { document.getElementById('email-modal').style.display = 'none'; }
+
+function handleCompareClick() {
+  if (!hasSubmittedEmail) {
+    openModal();
+  } else {
+    doFilter();
+  }
+}
+
+// Odeslání formuláře
+document.getElementById('lead-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('user-email').value;
+  hasSubmittedEmail = true;
+
+  closeModal();
+  doFilter(); 
+
+  // Odeslání do SheetDB
+  fetch('https://sheetdb.io/api/v1/0ylt9aa69vqk2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ 
+          "data": [{ 
+              "Email": email, 
+              "Timestamp": new Date().toLocaleString('cs-CZ'),
+              "Zdroj": "Web PorovnejPlat.cz"
+          }] 
+      })
+  }).catch(err => console.log("SheetDB error (ignored)"));
+
+  if(typeof fbq !== 'undefined') fbq('track', 'Lead');
+  if(typeof gtag !== 'undefined') gtag('event', 'generate_lead', { 'email': email });
+});
+
+function doFilter() {
+    const sector = sectorEl.value;
+    const role = roleEl.value;
+    const level = document.getElementById('f-level').value;
+    const region = document.getElementById('f-region').value;
+
+    const filtered = DATA.filter(d =>
+        (!sector || d.sector === sector) &&
+        (!role || d.title === role) &&
+        (!level || d.level === level) &&
+        (!region || d.region === region || d.region === 'Celá ČR')
+    );
+    renderCards(filtered);
+}
+
+function renderCards(data) {
+    const grid = document.getElementById('results');
+    grid.innerHTML = '';
+    
+    if(data.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--muted)">Pro tento výběr nemáme zatím dostatek dat.</div>';
+        return;
+    }
+
+    data.forEach(d => {
+        const levelClass = d.level === 'Junior' ? 'level-junior' : d.level === 'Medior' ? 'level-medior' : 'level-senior';
+        const card = document.createElement('div');
+        card.className = 'salary-card';
+        card.innerHTML = `
+            <span class="card-level ${levelClass}">${d.level}</span>
+            <h3 style="font-family:'Syne'; margin-bottom:5px;">${d.title}</h3>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:15px;">${d.sector} · ${d.region}</p>
+            <div class="salary-range">
+                <div><span class="s-label">Min</span><span class="s-value">${(d.min/1000).toFixed(0)}k</span></div>
+                <div><span class="s-label">Průměr</span><span class="s-value mid">${(d.med/1000).toFixed(0)}k</span></div>
+                <div><span class="s-label">Max</span><span class="s-value">${(d.max/1000).toFixed(0)}k</span></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+</script>
+</body>
+</html>

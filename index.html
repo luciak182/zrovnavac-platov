@@ -1097,6 +1097,7 @@
     // Centrální wrapper — pokud gtag není dostupný (blokátor), tiše selže
     function trackEvent(eventName, params) {
         try {
+            console.log('[GA4 Event]', eventName, params);
             if (typeof gtag === 'function') {
                 gtag('event', eventName, params);
             }

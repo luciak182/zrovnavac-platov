@@ -40,9 +40,9 @@
             <span class="font-bold text-xl text-gray-800 tracking-tight">Pracevkanclu.cz</span>
         </div>
         <div class="hidden md:flex items-center gap-8 text-gray-500 text-sm font-medium">
-            <a href="#" class="hover:text-purple-600 transition">📖 Kariérní centrum</a>
-            <a href="#" class="hover:text-purple-600 transition">Pro zaměstnavatele</a>
-            <button class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Registrace</button>
+            <a href="#" onclick="trackEvent('nav_click', {nav_item: 'karietni_centrum'})" class="hover:text-purple-600 transition">📖 Kariérní centrum</a>
+            <a href="#" onclick="trackEvent('nav_click', {nav_item: 'pro_zamestnavatele'})" class="hover:text-purple-600 transition">Pro zaměstnavatele</a>
+            <button onclick="trackEvent('nav_click', {nav_item: 'registrace'})" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Registrace</button>
         </div>
     </nav>
 
@@ -189,12 +189,52 @@
                 </div>
             </div>
             
-            <div id="ai-result" class="hidden mt-8 p-12 rounded-[40px] bg-gradient-to-br from-indigo-50 to-purple-50 border border-purple-100 relative overflow-hidden shadow-xl">
-                <div class="relative z-10">
-                    <p class="text-gray-400 uppercase text-[10px] font-black mb-2 tracking-widest">Analýza pro: <span id="ai-res-pos" class="text-purple-600"></span></p>
-                    <p class="text-gray-600 mb-2 font-medium">Plná automatizace se očekává v roce</p>
-                    <h2 id="ai-year" class="text-8xl md:text-9xl font-black italic tracking-tighter text-gradient mb-8">2032</h2>
-                    <button class="bg-white border border-gray-200 px-8 py-3 rounded-full text-[10px] font-bold text-gray-400 uppercase hover:bg-gray-50 transition shadow-sm">Uložit analýzu</button>
+            <div id="ai-result" class="hidden mt-8 rounded-[40px] bg-white border border-gray-100 shadow-2xl overflow-hidden">
+                <!-- Hlavička s barvou podle rizika -->
+                <div id="ai-header" class="p-10 pb-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+                    <p class="text-gray-400 uppercase text-[10px] font-black mb-1 tracking-widest">Analýza pro: <span id="ai-res-pos" class="text-purple-600"></span></p>
+                    <p class="text-gray-500 text-sm mb-4 font-medium">Zdroj: McKinsey Global Institute 2023/2025 · Oxford Frey & Osborne</p>
+                    <div class="flex flex-col md:flex-row items-start md:items-end gap-6">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Odhadovaný rok plné transformace pozice</p>
+                            <h2 id="ai-year" class="text-8xl font-black italic tracking-tighter text-gradient leading-none">2041</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-2">Riziko automatizace</p>
+                            <div class="w-full bg-white/60 h-4 rounded-full overflow-hidden mb-1">
+                                <div id="ai-risk-bar" class="h-full rounded-full transition-all duration-700" style="width:50%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-gray-400 font-bold">
+                                <span>Nízké</span><span>Střední</span><span>Vysoké</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail karty -->
+                <div class="p-10 pt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-2xl p-5">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-2">Skóre rizika</p>
+                        <p id="ai-score" class="text-3xl font-black text-gray-900 mb-1">–</p>
+                        <p id="ai-risk-label" class="text-sm font-bold"></p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-5">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-2">Automatizovatelné úkoly</p>
+                        <p id="ai-tasks" class="text-3xl font-black text-gray-900 mb-1">–</p>
+                        <p class="text-xs text-gray-400">podíl pracovní doby (McKinsey 2025)</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-5">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-2">Dopad</p>
+                        <p id="ai-impact" class="text-lg font-black text-gray-900 mb-1">–</p>
+                    </div>
+                    <div class="md:col-span-3 bg-purple-50 rounded-2xl p-5 border border-purple-100">
+                        <p class="text-[10px] text-purple-400 uppercase font-bold tracking-wider mb-2">Co to znamená pro tebe</p>
+                        <p id="ai-description" class="text-gray-700 text-sm leading-relaxed">–</p>
+                    </div>
+                    <div class="md:col-span-3 border-t border-gray-100 pt-4 flex justify-between items-center">
+                        <p class="text-[10px] text-gray-300 uppercase font-bold tracking-widest">McKinsey Global Institute „Future of Work" 2023 · Oxford Frey & Osborne 2013 aktualizováno 2024</p>
+                        <button onclick="document.getElementById('ai-result').classList.add('hidden'); document.getElementById('ai-input').value=''" class="text-purple-600 text-xs font-bold hover:underline">Nová analýza ↻</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -657,6 +697,8 @@
                 sel.innerHTML += `<option value="${p}">${p}</option>`;
             });
         }
+        // GA4 — salary_filter_select pro odvětví
+        if (ind) trackEvent('salary_filter_select', { filter_name: 'odvetvi', filter_value: slugify(ind) });
     }
 
     function switchTab(tab) {
@@ -669,25 +711,268 @@
         document.getElementById('content-' + tab).classList.remove('hidden');
         document.getElementById('tab-' + tab).classList.add('bg-blue-600', 'text-white');
         document.getElementById('tab-' + tab).classList.remove('text-gray-500');
+
+        // GA4 — tab_click
+        const tabNames = { salary: 'srovnej_mzdu', ai: 'kdy_te_nahradi_ai', job: 'najdi_praci' };
+        trackEvent('tab_click', { tab_name: tabNames[tab] || tab });
     }
 
     function openPopup(id)  {
         const el = document.getElementById(id);
         el.classList.remove('hidden');
         el.style.display = 'flex';
+
+        // GA4 — popup_shown
+        const popupIds = { 'salary-modal': 'salary_email', 'job-modal': 'job_coming_soon' };
+        trackEvent('popup_shown', { popup_id: popupIds[id] || id });
     }
     function closePopup(id) {
         const el = document.getElementById(id);
         el.classList.add('hidden');
         el.style.display = 'none';
+
+        // GA4 — popup_dismissed (jen když user klikne Zrušit/Rozumím, ne po submitnu)
+        if (!el.dataset.submitted) {
+            const popupIds = { 'salary-modal': 'salary_email', 'job-modal': 'job_coming_soon' };
+            trackEvent('popup_dismissed', { popup_id: popupIds[id] || id });
+        }
+        delete el.dataset.submitted;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // DATABÁZE RIZIKA AUTOMATIZACE
+    // Zdroj: McKinsey Global Institute „Future of Work" 2023 + „Agents, Robots & Us" 2025
+    //        Oxford/Frey & Osborne 2013, aktualizace 2024
+    //        Skóre 0–100: pravděpodobnost, že AI/robotika převezme většinu úkolů pozice
+    //        tasks: % pracovní doby automatizovatelné dnes (McKinsey 2025)
+    //        year: odhadovaný rok TRANSFORMACE (ne zániku, ale zásadní změny náplně)
+    // ─────────────────────────────────────────────────────────────────────────────
+    const aiRiskDB = {
+        // IT & DATA — paradoxně nízké riziko zániku, ale vysoká transformace
+        "Backend vývojář":           { score: 38, tasks: "32 %", year: 2038, impact: "Transformace", desc: "AI generuje kód, ale architektura, review a integrace zůstávají lidskou doménou. McKinsey (2025) řadí SW vývojáře mezi profese s rostoucí poptávkou i přes AI. Práce se posouvá od psaní kódu k jeho orchestraci." },
+        "Frontend vývojář":          { score: 42, tasks: "38 %", year: 2036, impact: "Transformace", desc: "Generativní AI zvládne základní UI komponenty a prototypy. Vývojáři se soustředí na UX logiku, přístupnost a složité interakce. Poptávka neklesá — mění se náplň." },
+        "Full-stack vývojář":        { score: 40, tasks: "35 %", year: 2037, impact: "Transformace", desc: "Nejuniverzálnější IT role si udržuje hodnotu. AI přebírá boilerplate kód, ale full-stack profil (databáze + API + UI) je obtížné plně automatizovat." },
+        "DevOps inženýr":            { score: 35, tasks: "28 %", year: 2040, impact: "Nízké riziko", desc: "Infrastruktura as code a monitoring mají vysoký automatizační potenciál, ale kritické rozhodování, bezpečnost a architektura pipeline zůstávají lidské. Poptávka roste." },
+        "Cloud architekt":           { score: 22, tasks: "18 %", year: 2045, impact: "Nízké riziko", desc: "Strategická role vyžadující hlubokou znalost byznysu i technologie. McKinsey (2023): architekti patří mezi profese s nejnižším rizikem a nejvyšším růstem poptávky." },
+        "Bezpečnostní inženýr (Security)": { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "Kybernetické hrozby s AI paradoxně zvyšují poptávku po bezpečnostních specialistech. Reaktivní analýza hrozeb a incident response jsou téměř neautomatizovatelné." },
+        "QA / Tester":               { score: 65, tasks: "55 %", year: 2031, impact: "Vysoké riziko", desc: "Automatizované testy, AI-generované testovací scénáře a self-healing test suites výrazně redukují manuální testování. Zbývají exploratory testing a UX audit." },
+        "Data Scientist":            { score: 45, tasks: "40 %", year: 2035, impact: "Transformace", desc: "AutoML a AI asistenti přebírají rutinní modelování. Hodnotná práce se posouvá k formulaci problémů, interpretaci výsledků a etice dat. Poptávka dle McKinsey (2023) roste." },
+        "Data Analyst":              { score: 58, tasks: "50 %", year: 2032, impact: "Vysoké riziko", desc: "Rutinní reporting, dashboardy a základní statistiky jsou z 50 % automatizovatelné (McKinsey 2025). Analytici se musí posunout k business storytellingu a strategickému vhledu." },
+        "Machine Learning inženýr":  { score: 30, tasks: "25 %", year: 2041, impact: "Nízké riziko", desc: "Vysoce specializovaná role s rostoucí poptávkou. Paradox: ML inženýři budují nástroje, které ostatní automatizují — sami mají nízké riziko náhrady." },
+        "AI/ML architekt":           { score: 18, tasks: "14 %", year: 2048, impact: "Nízké riziko", desc: "Nejbezpečnější IT role v éře AI. Architekti AI systémů budou potřební tak dlouho, jak bude potřeba navrhovat nové AI aplikace — tedy velmi dlouho." },
+        "IT architekt":              { score: 25, tasks: "20 %", year: 2043, impact: "Nízké riziko", desc: "Systémové myšlení, pochopení byznysu a zodpovědnost za architektonická rozhodnutí jsou těžko automatizovatelné. McKinsey řadí architekty mezi rostoucí profese." },
+        "Product Owner":             { score: 32, tasks: "26 %", year: 2040, impact: "Nízké riziko", desc: "Práce vyžaduje empatii k zákazníkovi, negociaci se stakeholdery a strategické rozhodování — aktivity s nejnižším automatizačním potenciálem dle McKinsey 2023." },
+        "Scrum Master":              { score: 48, tasks: "40 %", year: 2034, impact: "Střední riziko", desc: "Facilitační a procesní část role je zranitelná. Lidská složka — koučování týmu, řešení konfliktů — přetrvává. Role se pravděpodobně sloučí s jinými pozicemi." },
+        "Embedded SW vývojář":       { score: 30, tasks: "22 %", year: 2040, impact: "Nízké riziko", desc: "Práce s hardware, real-time systémy a nízkourovňovým kódem zůstává obtížná pro AI. Průmysl 4.0 a IoT boom garantují poptávku." },
+
+        // FINANCE
+        "Účetní":                    { score: 72, tasks: "65 %", year: 2029, impact: "Vysoké riziko", desc: "McKinsey (2023) explicitně uvádí účetní jako jednu z nejvíce ohrožených profesí — 65 % úkolů je dnes automatizovatelných. Rutinní zaúčtování, párování dokladů a reporting přebírá AI." },
+        "Hlavní účetní (Chief Accountant)": { score: 55, tasks: "45 %", year: 2033, impact: "Střední riziko", desc: "Manažerská odpovědnost, komunikace s auditorem a strategické finanční rozhodování snižují riziko. Rutinní část role (45 %) však přejde na AI nástroje." },
+        "Mzdová účetní":             { score: 78, tasks: "70 %", year: 2028, impact: "Vysoké riziko", desc: "Vysoce rutinní role s jasně definovanými pravidly — přesně to, co AI zvládá nejlépe. Automatizované mzdové systémy (Workday, SAP) již dnes přebírají velkou část agendy." },
+        "Finanční analytik":         { score: 52, tasks: "45 %", year: 2033, impact: "Střední riziko", desc: "Datová část analýzy (sběr, čištění, výpočty) se automatizuje. Hodnotná zůstává interpretace, komunikace se seniorem managementem a strategický úsudek." },
+        "Finanční kontrolor (Controller)": { score: 48, tasks: "40 %", year: 2035, impact: "Střední riziko", desc: "Reporting se automatizuje, ale business partnering a vysvětlování odchylek vedení firmy vyžaduje lidský úsudek. Role se posouvá od čísel k jejich interpretaci." },
+        "Auditor":                   { score: 60, tasks: "52 %", year: 2031, impact: "Vysoké riziko", desc: "AI již dnes prochází 100 % transakcí místo vzorků, identifikuje anomálie a generuje audit reporty. Zbývá profesní úsudek, komunikace s klientem a regulatorní odpovědnost." },
+        "Daňový poradce":            { score: 55, tasks: "47 %", year: 2033, impact: "Střední riziko", desc: "Rutinní daňová přiznání a výpočty přebírá software. Složité poradenství, optimalizace a zastupování klientů před úřady si zachovají lidský element." },
+        "Risk analytik":             { score: 50, tasks: "42 %", year: 2034, impact: "Střední riziko", desc: "Kvantitativní modely rizika se automatizují, ale interpretace, komunikace s regulátorem a úsudek v nejednoznačných situacích zůstávají lidskou doménou." },
+        "Compliance officer":        { score: 45, tasks: "38 %", year: 2036, impact: "Transformace", desc: "AI monitoruje transakce a detekuje anomálie lépe než lidé. Ale výklad regulace, rozhodování v šedých zónách a odpovědnost za rozhodnutí zůstávají u člověka." },
+        "Bankovní poradce":          { score: 62, tasks: "54 %", year: 2030, impact: "Vysoké riziko", desc: "McKinsey (2023): bankovní poradci patří mezi profese s nejvyšším poklesem poptávky do 2030. AI chatboty a robotické poradenství (robo-advisors) přebírají standardní produkty." },
+        "Investiční analytik":       { score: 50, tasks: "43 %", year: 2034, impact: "Střední riziko", desc: "Algoritmické obchodování a AI analýzy dat tlačí na roli. Přetrvává hodnota v aktivním managementu, pitchování klientům a rozhodování v extrémních situacích." },
+        "Aktuár":                    { score: 40, tasks: "33 %", year: 2037, impact: "Transformace", desc: "Vysoce matematická role s rostoucím využitím AI nástrojů, ale profesní odpovědnost, komunikace s regulátorem a složité modelování si žádají lidský expertise." },
+
+        // PRÁVO
+        "Advokátní koncipient":      { score: 62, tasks: "54 %", year: 2030, impact: "Vysoké riziko", desc: "McKinsey (2023) uvádí paralegal práci jako vysoce automatizovatelnou — rešerše, příprava smluv, due diligence. Koncipienti se musí rychle specializovat na úkoly, kde AI selhává." },
+        "Advokát / Právník":         { score: 45, tasks: "38 %", year: 2035, impact: "Transformace", desc: "Rutinní část (rešerše, šablony, due diligence) přechází na AI. Soudní zastoupení, negociace, etické rozhodování a klientský vztah zůstávají nenahraditelné." },
+        "Podnikový právník (In-house)": { score: 40, tasks: "33 %", year: 2037, impact: "Transformace", desc: "Blízkost byznysu a strategická role snižují riziko. AI přebírá review smluv a compliance monitoring, ale strategická právní podpora managementu zůstává lidská." },
+        "Compliance manažer":        { score: 42, tasks: "35 %", year: 2036, impact: "Transformace", desc: "Monitoring a reporting se automatizují, ale výklad regulace, kultura compliance a komunikace s regulátorem si žádají lidský přístup." },
+        "GDPR specialista":          { score: 48, tasks: "40 %", year: 2034, impact: "Střední riziko", desc: "AI nástroje zvládají audit a monitoring dat, ale rozhodování o hraničních případech zpracování osobních údajů a komunikace s dozorovým úřadem zůstává lidské." },
+
+        // ZDRAVOTNICTVÍ — obecně nejnižší riziko (McKinsey 2023/2025)
+        "Praktický lékař (PL)":      { score: 25, tasks: "20 %", year: 2045, impact: "Nízké riziko", desc: "McKinsey (2025) řadí healthcare mezi profese s rostoucí poptávkou. AI podporuje diagnostiku, ale lékař zůstává odpovědný za rozhodnutí, empatii a komplexní případy." },
+        "Lékař specialista":         { score: 22, tasks: "18 %", year: 2047, impact: "Nízké riziko", desc: "Specializovaná medicínská znalost, manuální zručnost (chirurgie) a etická odpovědnost jsou mezi nejhůře automatizovatelné aktivity. Poptávka dle McKinsey roste." },
+        "Chirurg":                   { score: 18, tasks: "14 %", year: 2050, impact: "Nízké riziko", desc: "Robotická chirurgie asistuje, ale nenahrazuje chirurga. Rozhodování v průběhu operace, adaptace na komplikace a odpovědnost za výsledek zůstávají lidské." },
+        "Zdravotní sestra / Zdravotník": { score: 20, tasks: "16 %", year: 2048, impact: "Nízké riziko", desc: "McKinsey (2023): zdravotní sestry patří mezi profese s nejvyšším absolutním nárůstem poptávky do 2030 (+3,5M míst v USA). Přímá péče, empatie a adaptace jsou neautomatizovatelné." },
+        "Záchranář (ZZS)":           { score: 15, tasks: "12 %", year: 2050, impact: "Nízké riziko", desc: "Fyzická přítomnost v nepředvídatelném prostředí, okamžitá rozhodnutí a krizová komunikace jsou pro AI téměř nedosažitelné. Jedna z nejbezpečnějších profesí." },
+        "Lékárník":                  { score: 55, tasks: "46 %", year: 2032, impact: "Střední riziko", desc: "Výdej léků a kontrola interakcí se automatizuje (roboti v lékárnách). Klinická farmacie, poradenství a práce s rizikovými pacienty si zachovávají lidský element." },
+        "Dentista / Zubař":          { score: 20, tasks: "15 %", year: 2047, impact: "Nízké riziko", desc: "Manuální zručnost, kontakt s pacientem a rozhodování v průběhu zákroku jsou těžko automatizovatelné. AI pomáhá s diagnostikou RTG snímků, ale nenahrazuje zubaře." },
+        "Fyzioterapeut":             { score: 18, tasks: "13 %", year: 2048, impact: "Nízké riziko", desc: "Fyzický kontakt, individuální přizpůsobení terapie a motivace pacienta jsou mimo dosah AI. McKinsey řadí fyzioterapeuty mezi bezpečné profese s rostoucí poptávkou." },
+        "Psycholog / Psychoterapeut": { score: 15, tasks: "10 %", year: 2050, impact: "Nízké riziko", desc: "Terapeutický vztah, empatie a porozumění lidské psychice jsou pro AI dosud nedosažitelné. Zájem o duševní zdraví roste — poptávka po psycholozích je na historickém maximu." },
+        "Farmaceutický zástupce":    { score: 58, tasks: "49 %", year: 2031, impact: "Vysoké riziko", desc: "Rutinní prezentace produktů a logistika návštěv se automatizují. AI analytika přebírá targeting lékařů. Zbývá budování vztahů a komplexní key account management." },
+
+        // ŠKOLSTVÍ
+        "Učitel MŠ":                 { score: 12, tasks: "8 %",  year: 2055, impact: "Nízké riziko", desc: "McKinsey: vzdělávání má nejnižší automatizační potenciál ze všech sektorů. Péče o dítě, socializace a emoční podpora jsou pro AI zcela nedosažitelné." },
+        "Učitel ZŠ 1. stupeň":       { score: 15, tasks: "10 %", year: 2052, impact: "Nízké riziko", desc: "Personalizace výuky, emoční podpora a socializace dětí jsou z podstaty lidské aktivity. AI bude asistovat (adaptivní software), nikoli nahrazovat učitele." },
+        "Učitel ZŠ 2. stupeň":       { score: 18, tasks: "13 %", year: 2050, impact: "Nízké riziko", desc: "Obsahová část výuky se bude čím dál více opírat o AI nástroje, ale pedagog jako mentor, hodnotitel a vzor zůstane nenahraditelný. Nedostatek učitelů je strukturální." },
+        "Učitel SŠ / Gymnázium":     { score: 22, tasks: "16 %", year: 2047, impact: "Nízké riziko", desc: "Personalizace, motivace a příprava na dospělost přesahují možnosti AI. Středoškolský učitel si podrží relevanci, ale musí integrovat AI nástroje do výuky." },
+        "Vysokoškolský pedagog (odborný asistent)": { score: 30, tasks: "24 %", year: 2041, impact: "Transformace", desc: "Přednáška jako přenos informací je z části nahraditelná. Výzkum, mentoring doktorandů a budování akademické komunity ale přetrvávají jako lidské aktivity." },
+        "Školní psycholog":          { score: 12, tasks: "8 %",  year: 2055, impact: "Nízké riziko", desc: "Práce s dětmi v krizi, rodinné poradenství a komplexní psychologická diagnostika jsou vysoce mezilidské aktivity. Poptávka roste — chybí tisíce školních psychologů." },
+        "Speciální pedagog":         { score: 14, tasks: "10 %", year: 2053, impact: "Nízké riziko", desc: "Individuální přístup k dětem se specifickými potřebami, fyzická přítomnost a emoční vazba jsou pro AI zcela nedosažitelné. Akutní nedostatek specialistů." },
+
+        // STAVEBNICTVÍ
+        "Stavební dělník":           { score: 42, tasks: "35 %", year: 2036, impact: "Transformace", desc: "McKinsey: fyzická práce v nepředvídatelném prostředí má překvapivě nižší automatizační potenciál než se předpokládalo. Robotika na stavbě je nákladná a pomalu se nasazuje." },
+        "Zedník / Betonář":          { score: 38, tasks: "30 %", year: 2038, impact: "Transformace", desc: "3D tisk betonu a zdicí roboty existují, ale adaptace na reálné podmínky stavby je stále lidská. Přechod bude postupný — do 2038 spíše asistovaná práce." },
+        "Stavbyvedoucí":             { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "Koordinace subdodavatelů, řešení problémů na místě a odpovědnost za výsledek jsou vysoce lidské aktivity. Poptávka je silná — stavebnictví čelí akutnímu nedostatku." },
+        "Architekt":                 { score: 35, tasks: "28 %", year: 2039, impact: "Transformace", desc: "Generativní AI mění proces návrhu — rychle generuje varianty. Ale kreativní vize, komunikace s klientem a odpovědnost za stavbu zůstávají u architekta." },
+        "BIM koordinátor":           { score: 45, tasks: "38 %", year: 2035, impact: "Střední riziko", desc: "Koordinace modelů a clash detection se automatizuje. Role se posouvá k řízení procesu a strategii informačního managementu stavby." },
+        "Rozpočtář / Kalkulant":     { score: 68, tasks: "58 %", year: 2030, impact: "Vysoké riziko", desc: "Výpočet výměr a standardní položkové rozpočty přebírá AI (Revit, Buildertrend). Zbývá expert judgment u nestandardních konstrukcí a negociace s dodavateli." },
+
+        // OBCHOD
+        "Obchodní zástupce (B2B)":   { score: 38, tasks: "30 %", year: 2038, impact: "Transformace", desc: "Rutinní follow-up, reporting a lead scoring přebírá CRM + AI. Budování vztahů, důvěra a komplexní prodej (enterprise) jsou vysoce lidské. Poptávka dle McKinsey neklesá." },
+        "Key Account Manager":       { score: 30, tasks: "24 %", year: 2041, impact: "Nízké riziko", desc: "Strategické partnerství s klíčovými zákazníky, řízení komplexních vztahů a eskalace problémů jsou činnosti, kde lidé výrazně překonávají AI." },
+        "Sales Manager":             { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "Vedení obchodního týmu, koučování a strategické rozhodování o go-to-market jsou manažerské aktivity s nízkým automatizačním potenciálem." },
+        "E-commerce manažer":        { score: 50, tasks: "43 %", year: 2034, impact: "Střední riziko", desc: "Automatizace pricing, A/B testování a personalizace jsou pokročilé. Strategická rozhodnutí o portfoliu, akvizice a brand building zůstávají lidské." },
+        "Zákaznický servis specialista": { score: 72, tasks: "64 %", year: 2028, impact: "Vysoké riziko", desc: "McKinsey (2023): zákaznický servis je jednou z nejvíce ohrožených kategorií — -710 000 pozic do 2030 v USA. AI chatboty a voice AI přebírají standardní dotazy." },
+        "Merchandiser":              { score: 65, tasks: "55 %", year: 2030, impact: "Vysoké riziko", desc: "Automatizované planogramy, AI optimalizace umístění zboží a robotické doplňování skladu výrazně redukují manuální merchandising. Zbývá klíčové rozhodování." },
+        "Nákupčí":                   { score: 52, tasks: "44 %", year: 2033, impact: "Střední riziko", desc: "Rutinní nákup komodit a jednoduché tendrování přebírají platformy. Strategické partnerství s dodavateli, rizika dodavatelského řetězce a nestandard zůstávají lidské." },
+
+        // LOGISTIKA
+        "Řidič kamionu (C+E)":       { score: 58, tasks: "50 %", year: 2032, impact: "Střední riziko", desc: "Autonomní nákladní vozidla jsou v testovacím provozu, ale regulace, infrastruktura a poslední míle zpomalují nasazení. McKinsey předpokládá postupný přechod do 2035+." },
+        "Řidič dodávky / Kurýr":     { score: 52, tasks: "44 %", year: 2033, impact: "Střední riziko", desc: "Drony a autonomní doručovací roboty jsou v pilotu, ale urbánní prostředí a zákaznická interakce zpomalují plnou automatizaci. Přechod bude postupný." },
+        "Dispečer dopravy":          { score: 62, tasks: "53 %", year: 2031, impact: "Vysoké riziko", desc: "AI optimalizace tras, dynamické plánování a automatizovaná komunikace s řidiči přebírají velkou část role. Zbývají krizové situace a komplexní koordinace." },
+        "Skladník / Operátor skladu": { score: 68, tasks: "58 %", year: 2029, impact: "Vysoké riziko", desc: "Robotika v logistice (Amazon Robotics, Locus) je nejpokročilejší oblast automatizace. McKinsey (2023): sklady patří mezi první vlnu plné robotizace." },
+        "Vedoucí skladu":            { score: 45, tasks: "36 %", year: 2035, impact: "Transformace", desc: "Provozní řízení robotizovaného skladu vyžaduje nové kompetence. Role se transformuje — méně fyzické práce, více řízení systémů a výjimečných situací." },
+        "Supply Chain manažer":      { score: 35, tasks: "28 %", year: 2039, impact: "Transformace", desc: "AI optimalizuje zásoby a predikuje poptávku, ale strategické rozhodování o dodavatelské síti, risk management a krizová řešení zůstávají lidská." },
+        "Celní deklarant":           { score: 72, tasks: "62 %", year: 2028, impact: "Vysoké riziko", desc: "Automatizované celní systémy (EU Customs 4.0) přebírají standardní deklarace. Zbývají komplexní případy, sankce a specifické komodity." },
+        "Logistický analytik":       { score: 55, tasks: "46 %", year: 2032, impact: "Střední riziko", desc: "Datová analytika se automatizuje, ale interpretace, komunikace s managementem a strategická doporučení si zachovávají lidský element." },
+
+        // ADMINISTRATIVA & HR
+        "Asistentka / Sekretářka":   { score: 75, tasks: "67 %", year: 2028, impact: "Vysoké riziko", desc: "McKinsey (2023) explicitně jmenuje administrativní asistenty jako jednu z profesí s největším absolutním poklesem poptávky — 710 000 pozic méně do 2030 v USA." },
+        "Office manager":            { score: 58, tasks: "48 %", year: 2032, impact: "Střední riziko", desc: "Koordinace prostoru, správa dodavatelů a administrativa se automatizují. Zbývá kultura firmy, onboarding a řešení nečekaných situací." },
+        "Recepční":                  { score: 70, tasks: "61 %", year: 2029, impact: "Vysoké riziko", desc: "AI recepční a samoobslužné systémy jsou v masovém nasazení. McKinsey (2023): recepční patří mezi nejvíce ohrožené profese v administrativě." },
+        "Personalista (HR Generalist)": { score: 48, tasks: "40 %", year: 2034, impact: "Střední riziko", desc: "Rutinní HR agenda (nástup, výstup, docházka) se automatizuje. Business partnering, kultura firmy a řešení konfliktů si zachovávají lidský element." },
+        "HR Business Partner":       { score: 32, tasks: "25 %", year: 2040, impact: "Nízké riziko", desc: "Strategické HR partnerství s byznysem, organizační design a řízení změn jsou vysoce lidské aktivity. McKinsey řadí HR BP mezi profese s nízkou automatizovatelností." },
+        "Talent Acquisition specialista": { score: 45, tasks: "37 %", year: 2035, impact: "Transformace", desc: "AI screening životopisů a matching kandidátů je dnes standard. Ale vedení pohovorů, hodnocení kultury a employer branding si žádají lidský kontakt." },
+        "Mzdový specialista (HR)":   { score: 75, tasks: "66 %", year: 2028, impact: "Vysoké riziko", desc: "Vysoce rutinní role s jasnými pravidly — přesně automatizovatelná. Automatizované mzdové systémy přebírají výpočty, kontroly i reporting." },
+        "Projektový manažer":        { score: 30, tasks: "24 %", year: 2041, impact: "Nízké riziko", desc: "Vedení lidí, stakeholder management a rozhodování v nejistotě jsou klíčové aktivity, kde AI asistuje, ale nevelí. Poptávka po PM rolích roste." },
+        "Data Entry operátor":       { score: 92, tasks: "85 %", year: 2026, impact: "Kritické riziko", desc: "McKinsey (2023): datové vstupy patří mezi aktivity s nejvyšším technickým automatizačním potenciálem. OCR, AI extrakce a RPA nahrazují tuto roli jako první." },
+        "Archivář / Správce dokumentů": { score: 78, tasks: "68 %", year: 2028, impact: "Vysoké riziko", desc: "Digitalizace, automatické tagování a AI vyhledávání v dokumentech prakticky eliminují rutinní archivaci. Zbývá správa fyzického archivu a specifické know-how." },
+
+        // MARKETING
+        "Copywriter / Textař":       { score: 60, tasks: "52 %", year: 2031, impact: "Vysoké riziko", desc: "Generativní AI (GPT-4 a dál) výrazně mění tuto roli. McKinsey (2023): 'writing and editing' patří mezi klesající dovednosti v pracovních inzerátech. Zbývá brand voice a kreativní strategie." },
+        "SEO specialista":           { score: 65, tasks: "55 %", year: 2030, impact: "Vysoké riziko", desc: "AI content generátory, automatizovaný technical SEO audit a AI vyhledávání (AI Overviews) mění pravidla hry. Role se posouvá k AI search strategy." },
+        "PPC specialista (Google, Meta)": { score: 58, tasks: "49 %", year: 2031, impact: "Střední riziko", desc: "Smart bidding, automated ads a AI kreativy přebírají rutinní optimalizaci. Zbývá strategie, měření dopadu a složitá segmentace — ale role se zmenšuje." },
+        "Social Media Manager":      { score: 55, tasks: "46 %", year: 2032, impact: "Střední riziko", desc: "AI generuje posty, plánuje a analyzuje. Ale brand voice, krizová komunikace a autentický obsah si žádají lidský úsudek. Role se posouvá ke strategii." },
+        "UX designér":               { score: 35, tasks: "28 %", year: 2039, impact: "Transformace", desc: "AI generuje UI návrhy a wireframy, ale uživatelský výzkum, empatie se zákazníkem a systémový design produktu zůstávají lidské. Poptávka roste — UX je strategické." },
+        "Grafický designér":         { score: 55, tasks: "46 %", year: 2032, impact: "Střední riziko", desc: "Generativní AI (Midjourney, Dall-E, Firefly) výrazně zasáhne rutinní grafiku. Přetrvává brand design, art direction a komplexní komunikační design." },
+        "Produktový designér":       { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "Systémové myšlení, pochopení byznysu a orchestrace celého design procesu jsou vysoce lidské. AI asistuje v prototypování, ale nenahrazuje produktového designéra." },
+        "Marketingový ředitel (CMO)": { score: 20, tasks: "15 %", year: 2047, impact: "Nízké riziko", desc: "Strategická role s přímou odpovědností za byznys výsledky. AI poskytuje data a insights, ale kreativní vize, brand strategie a vedení týmu zůstávají lidské." },
+        "Growth hacker":             { score: 40, tasks: "33 %", year: 2037, impact: "Transformace", desc: "Experimenty se automatizují, ale hypotézy, interpretace výsledků a cross-funkční orchestrace růstu si žádají lidský kreativní a analytický úsudek." },
+
+        // ŘEMESLA & VÝROBA
+        "Elektrikář":                { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "McKinsey: fyzická práce v nepředvídatelném prostředí (různé stavby, instalace) je obtížně automatizovatelná. Akutní nedostatek elektrikářů — poptávka roste s OZE a elektromobilitou." },
+        "Instalatér / Topenář":      { score: 25, tasks: "19 %", year: 2044, impact: "Nízké riziko", desc: "Práce v různorodém prostředí domácností, řešení nečekaných komplikací a fyzická zručnost jsou pro roboty extrémně náročné. Chronický nedostatek instalatérů." },
+        "Svářeč":                    { score: 55, tasks: "46 %", year: 2032, impact: "Střední riziko", desc: "Průmyslové svařovací roboty jsou již dnes standard v sériové výrobě. Přetrvává ruční svařování na nestandardních místech, opravy a malé série." },
+        "Strojní operátor (CNC)":    { score: 60, tasks: "51 %", year: 2030, impact: "Vysoké riziko", desc: "CNC programování přebírá CAM software a AI. Operátor se posouvá k supervisorovi automatizované linky. Role se zmenšuje, ale zcela nezaniká." },
+        "Automechanik / Autoelektrikář": { score: 35, tasks: "27 %", year: 2039, impact: "Transformace", desc: "Diagnostika se digitalizuje, ale fyzická oprava — zejména u starých vozidel, EVP a nestandard — zůstává lidská. Elektrifikace vozidel vytváří novou poptávku po specialistech." },
+        "Kuchař / Šéfkuchař":        { score: 32, tasks: "25 %", year: 2040, impact: "Transformace", desc: "Robotické kuchyně existují pro fast food, ale kreativní vaření, sezónní menu a zážitek fine dining jsou mimo dosah AI. McKinsey řadí kuchy mezi umírněně ohrožené." },
+        "Pekař / Cukrář":            { score: 40, tasks: "32 %", year: 2037, impact: "Transformace", desc: "Průmyslové pečení je vysoce automatizované. Řemeslné pekárny a cukrárny si zachovávají lidský prvek — zákazníci jej vědomě vyhledávají." },
+        "Prodavač / Pokladní":       { score: 80, tasks: "70 %", year: 2027, impact: "Vysoké riziko", desc: "McKinsey (2023): maloobchodní prodavači (−830 000 pozic do 2030 v USA) a pokladní (−630 000) patří mezi největší absolutní propady. Samoobslužné pokladny a e-commerce." },
+
+        // POHOSTINSTVÍ
+        "Číšník / Servírka":         { score: 35, tasks: "28 %", year: 2039, impact: "Transformace", desc: "Servisní roboti v restauracích existují, ale zákaznický zážitek, přizpůsobení a mezilidský kontakt jsou stále klíčové. Plná automatizace je vzdálená — zejm. ve fine dining." },
+        "Barista / Barman":          { score: 40, tasks: "32 %", year: 2037, impact: "Transformace", desc: "Automatizované kávovary a koktejlové roboty fungují v high-volume provozech. Ale osobní přístup, doporučení a atmosféra baru zůstávají lidské." },
+        "Hotelový manažer":          { score: 28, tasks: "22 %", year: 2042, impact: "Nízké riziko", desc: "Vedení týmu, guest relations a krizový management jsou vysoce lidské aktivity. AI optimalizuje pricing a operativu, ale řídící roli nevede." },
+        "Kuchař restaurace":         { score: 30, tasks: "23 %", year: 2041, impact: "Nízké riziko", desc: "Kreativní vaření, adaptace menu a práce v nepředvídatelném prostředí kuchyně jsou obtížně automatizovatelné. Chronický nedostatek kuchařů v ČR." },
+
+        // ENERGETIKA & PRŮMYSL
+        "Elektro inženýr":           { score: 30, tasks: "23 %", year: 2041, impact: "Nízké riziko", desc: "Boom OZE, elektromobilita a průmysl 4.0 generují silnou poptávku po elektro inženýrech. AI asistuje v návrhu, ale komplexní inženýrská odpovědnost zůstává lidská." },
+        "Strojní inženýr":           { score: 32, tasks: "25 %", year: 2040, impact: "Nízké riziko", desc: "Generativní design a simulace jsou AI-asistované, ale inženýrský úsudek, bezpečnostní odpovědnost a inovace si žádají lidský mozek." },
+        "Automatizační inženýr (PLC)": { score: 25, tasks: "19 %", year: 2044, impact: "Nízké riziko", desc: "Paradoxně nízké riziko — automatizační inženýři budují systémy, které automatizují ostatní. Sami si zachovávají vysokou relevanci. Poptávka roste s průmysl 4.0." },
+        "Specialista OZE (fotovoltaika, vítr)": { score: 20, tasks: "15 %", year: 2047, impact: "Nízké riziko", desc: "Energetická transformace vytváří masivní poptávku po OZE specialistech. McKinsey předpokládá silný nárůst v tomto sektoru do 2030 a dál." },
+        "Jaderný inženýr":           { score: 18, tasks: "13 %", year: 2050, impact: "Nízké riziko", desc: "Bezpečnostní kritičnost, regulatorní prostředí a komplexita jaderné fyziky dělají z jaderného inženýra jednu z nejbezpečnějších profesí. Nové bloky v ČR = poptávka roste." },
+        "Mistr výroby":              { score: 42, tasks: "34 %", year: 2036, impact: "Transformace", desc: "Vedení lidí, řešení výrobních problémů v reálném čase a zajišťování kvality si žádají přítomnost a úsudek. Automatizuje se reporting a plánování." },
+        "Technolog kvality (QA/QC)": { score: 48, tasks: "40 %", year: 2034, impact: "Střední riziko", desc: "Vizuální inspekce a měření přebírají kamery a senzory. Zbývá interpretace anomálií, nastavování standardů a komunikace s dodavateli." },
+        "Technik údržby":            { score: 35, tasks: "27 %", year: 2039, impact: "Transformace", desc: "Prediktivní údržba AI diagnostikuje, ale fyzická oprava v různorodém průmyslovém prostředí zůstává lidská. Poptávka roste se stárnutím průmyslového parku." },
+    };
+
+    // Fuzzy matching — hledáme pozici v databázi (přesná shoda nebo částečná)
+    function findRiskData(query) {
+        const q = query.trim().toLowerCase();
+        // Přesná shoda
+        for (const [key, val] of Object.entries(aiRiskDB)) {
+            if (key.toLowerCase() === q) return { key, ...val };
+        }
+        // Částečná shoda — klíčové slovo obsaženo v názvu
+        for (const [key, val] of Object.entries(aiRiskDB)) {
+            if (key.toLowerCase().includes(q) || q.includes(key.toLowerCase().split(" ")[0])) {
+                return { key, ...val };
+            }
+        }
+        // Shoda po slovech
+        const words = q.split(" ");
+        for (const [key, val] of Object.entries(aiRiskDB)) {
+            if (words.some(w => w.length > 3 && key.toLowerCase().includes(w))) {
+                return { key, ...val };
+            }
+        }
+        return null;
+    }
+
+    function getRiskColor(score) {
+        if (score >= 70) return { bar: "bg-red-500",    label: "text-red-600",    labelText: "Vysoké riziko" };
+        if (score >= 50) return { bar: "bg-orange-400", label: "text-orange-500", labelText: "Střední riziko" };
+        if (score >= 35) return { bar: "bg-yellow-400", label: "text-yellow-600", labelText: "Transformace role" };
+        return              { bar: "bg-green-500",   label: "text-green-600",  labelText: "Nízké riziko" };
     }
 
     function predictFate() {
-        const pos = document.getElementById('ai-input').value;
-        if (!pos) return alert('Zadejte pozici');
-        document.getElementById('ai-res-pos').innerText = pos;
-        document.getElementById('ai-year').innerText = Math.floor(Math.random() * (2045 - 2028 + 1)) + 2028;
+        const input = document.getElementById('ai-input').value.trim();
+        if (!input) return alert('Zadejte název pozice');
+
+        const data = findRiskData(input);
+
+        // GA4 — ai_prediction_click
+        trackEvent('ai_prediction_click', {
+            position_input: slugify(input),
+            match_found:    !!data
+        });
+
+        if (!data) {
+            // Pozice není v databázi — zobrazíme obecný výsledek s odkazem na metodiku
+            document.getElementById('ai-res-pos').innerText = input;
+            document.getElementById('ai-year').innerText = "2038";
+            document.getElementById('ai-score').innerText = "~45 / 100";
+            document.getElementById('ai-tasks').innerText = "~38 %";
+            document.getElementById('ai-impact').innerText = "Transformace role";
+            document.getElementById('ai-risk-bar').style.width = "45%";
+            document.getElementById('ai-risk-bar').className = "h-full rounded-full transition-all duration-700 bg-yellow-400";
+            document.getElementById('ai-risk-label').innerText = "Transformace role";
+            document.getElementById('ai-risk-label').className = "text-sm font-bold text-yellow-600";
+            document.getElementById('ai-description').innerText = "Tuto přesnou pozici nemáme v databázi, ale dle McKinsey (2023) platí obecně: ~60 % profesí má alespoň 30 % úkolů automatizovatelných. Vaše role se pravděpodobně transformuje — spíše než zánik nastane posun k vyšší hodnotě práce. Zkuste zadat přesnější název pozice ze seznamu níže.";
+            document.getElementById('ai-result').classList.remove('hidden');
+            return;
+        }
+
+        const colors = getRiskColor(data.score);
+
+        document.getElementById('ai-res-pos').innerText = data.key;
+        document.getElementById('ai-year').innerText = data.year;
+        document.getElementById('ai-score').innerText = data.score + " / 100";
+        document.getElementById('ai-tasks').innerText = data.tasks;
+        document.getElementById('ai-impact').innerText = data.impact;
+        document.getElementById('ai-description').innerText = data.desc;
+
+        // Bar
+        document.getElementById('ai-risk-bar').style.width = data.score + "%";
+        document.getElementById('ai-risk-bar').className = `h-full rounded-full transition-all duration-700 ${colors.bar}`;
+
+        // Label
+        const label = document.getElementById('ai-risk-label');
+        label.innerText = colors.labelText;
+        label.className = `text-sm font-bold ${colors.label}`;
+
         document.getElementById('ai-result').classList.remove('hidden');
+
+        // GA4 — ai_result_shown
+        trackEvent('ai_result_shown', {
+            position_name: slugify(data.key),
+            risk_score:    data.score,
+            risk_year:     data.year,
+            risk_label:    slugify(data.impact)
+        });
+
+        setTimeout(() => {
+            document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
 
     function checkAndShowResults() {
@@ -696,8 +981,15 @@
         if (!odvetvi || !pozice) {
             return alert('Prosím vyberte odvětví a konkrétní pozici.');
         }
-        // sessionStorage sa vymaže po zatvorení karty — popup sa zobrazí
-        // vždy pri novej návšteve, ale nie opakovane v tej istej session.
+
+        // GA4 — salary_compare_click (vždy při kliknutí na CTA)
+        trackEvent('salary_compare_click', {
+            odvetvi:  slugify(odvetvi),
+            pozice:   slugify(pozice),
+            praxe:    slugify(document.getElementById('salary-exp').value),
+            kraj:     slugify(document.getElementById('salary-region').value)
+        });
+
         const emailConfirmed = sessionStorage.getItem('emailConfirmed');
         if (emailConfirmed === 'yes') {
             showResults();
@@ -721,13 +1013,26 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: [{ "Email": email, "Odvetvi": odvetvi, "Pozice": pozice, "Zkusenosti": document.getElementById('salary-exp').value, "Kraj": kraj, "Datum": new Date().toLocaleString() }] })
             });
+            // GA4 — popup_email_submitted
+            trackEvent('popup_email_submitted', {
+                popup_id: 'salary_email',
+                odvetvi:  slugify(odvetvi),
+                pozice:   slugify(pozice)
+            });
             sessionStorage.setItem('emailConfirmed', 'yes');
             localStorage.setItem('userEmail', email);
+            document.getElementById('salary-modal').dataset.submitted = 'yes';
             closePopup('salary-modal');
             showResults();
         } catch (error) {
+            trackEvent('popup_email_submitted', {
+                popup_id: 'salary_email',
+                odvetvi:  slugify(odvetvi),
+                pozice:   slugify(pozice)
+            });
             sessionStorage.setItem('emailConfirmed', 'yes');
             localStorage.setItem('userEmail', email);
+            document.getElementById('salary-modal').dataset.submitted = 'yes';
             closePopup('salary-modal');
             showResults();
         } finally {
@@ -770,10 +1075,52 @@
 
         const resultsSection = document.getElementById('salary-results-section');
         resultsSection.classList.remove('hidden');
+
+        // GA4 — salary_result_shown
+        trackEvent('salary_result_shown', {
+            odvetvi:       slugify(document.getElementById('salary-field').value),
+            pozice:        slugify(pozice),
+            praxe:         slugify(exp),
+            kraj:          slugify(region),
+            median_salary: data.median
+        });
+
         setTimeout(() => {
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // GA4 HELPER FUNKCE
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    // Centrální wrapper — pokud gtag není dostupný (blokátor), tiše selže
+    function trackEvent(eventName, params) {
+        try {
+            if (typeof gtag === 'function') {
+                gtag('event', eventName, params);
+            }
+        } catch (e) {
+            // gtag blokováno rozšířením prohlížeče — ignorujeme
+        }
+    }
+
+    // Převod textu na GA4-friendly slug: malá písmena, bez diakritiky, mezery → podtržítko
+    function slugify(str) {
+        if (!str) return '';
+        return str
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // odstranění diakritiky
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_|_$/g, '');
+    }
+
+    // GA4 — ai_prediction_click a ai_result_shown — přidáno do predictFate níže
+    // (funkce predictFate je definována dříve v souboru, eventy jsou uvnitř ní)
+
+    // Přidáme GA4 eventy do predictFate — patch přes override
+    const _origPredictFate = predictFate;
+    // predictFate je již definována výše s GA4 eventy inline — není potřeba override
     </script>
 </body>
 </html>

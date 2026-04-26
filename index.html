@@ -221,7 +221,7 @@
         </div>
     </main>
 
-    <div id="salary-modal" class="fixed inset-0 bg-purple-950/20 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+    <div id="salary-modal" class="fixed inset-0 bg-purple-950/20 backdrop-blur-md hidden z-50 items-center justify-center p-4">
         <div class="bg-white text-gray-900 w-full max-w-md rounded-[40px] p-10 relative border border-white shadow-2xl">
             <h2 class="text-3xl font-extrabold text-gray-900 mb-4 text-center">Odemknout výsledky</h2>
             <p class="text-gray-500 mb-8 leading-relaxed text-center text-sm">Zadejte e-mail a my vám ihned pod formulářem zobrazíme kompletní srovnání pro vaši pozici.</p>
@@ -236,7 +236,7 @@
         </div>
     </div>
 
-    <div id="job-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div id="job-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 items-center justify-center p-4">
         <div class="bg-white rounded-[40px] p-12 max-w-sm text-center shadow-2xl">
             <div class="text-6xl mb-6">✨</div>
             <h2 class="text-2xl font-bold mb-4 tracking-tight">Již brzy!</h2>
@@ -671,8 +671,16 @@
         document.getElementById('tab-' + tab).classList.remove('text-gray-500');
     }
 
-    function openPopup(id)  { document.getElementById(id).classList.remove('hidden'); }
-    function closePopup(id) { document.getElementById(id).classList.add('hidden'); }
+    function openPopup(id)  {
+        const el = document.getElementById(id);
+        el.classList.remove('hidden');
+        el.style.display = 'flex';
+    }
+    function closePopup(id) {
+        const el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
 
     function predictFate() {
         const pos = document.getElementById('ai-input').value;
@@ -688,8 +696,10 @@
         if (!odvetvi || !pozice) {
             return alert('Prosím vyberte odvětví a konkrétní pozici.');
         }
-        const savedEmail = localStorage.getItem('userEmail');
-        if (savedEmail && savedEmail.includes('@')) {
+        // sessionStorage sa vymaže po zatvorení karty — popup sa zobrazí
+        // vždy pri novej návšteve, ale nie opakovane v tej istej session.
+        const emailConfirmed = sessionStorage.getItem('emailConfirmed');
+        if (emailConfirmed === 'yes') {
             showResults();
         } else {
             openPopup('salary-modal');
@@ -711,10 +721,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: [{ "Email": email, "Odvetvi": odvetvi, "Pozice": pozice, "Zkusenosti": document.getElementById('salary-exp').value, "Kraj": kraj, "Datum": new Date().toLocaleString() }] })
             });
+            sessionStorage.setItem('emailConfirmed', 'yes');
             localStorage.setItem('userEmail', email);
             closePopup('salary-modal');
             showResults();
         } catch (error) {
+            sessionStorage.setItem('emailConfirmed', 'yes');
             localStorage.setItem('userEmail', email);
             closePopup('salary-modal');
             showResults();

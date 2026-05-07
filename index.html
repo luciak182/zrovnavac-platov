@@ -1347,7 +1347,6 @@
     // ─────────────────────────────────────────────────────────────────────────────
     let pendingAiInput = null; // uložíme vstup kým čakáme na email
 
-    const _origPredictFate = window.predictFate;
     // Obalíme predictFate — pred zobrazením výsledku skontrolujeme email
     function predictFateWithGate() {
         const input = document.getElementById('ai-input').value.trim();
@@ -1461,13 +1460,6 @@
     }
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
-    document.addEventListener('DOMContentLoaded', () => {
-        const aiBtn = document.querySelector('#content-ai button[onclick="predictFate()"]');
-        if (aiBtn) aiBtn.setAttribute('onclick', 'predictFateWithGate()');
-    });
-
-    // GA4 — ai_prediction_click a ai_result_shown — přidáno do predictFate níže
-    // (funkce predictFate je definována dříve v souboru, eventy jsou uvnitř ní)
     </script>
 </body>
 </html>

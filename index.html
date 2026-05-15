@@ -1407,74 +1407,74 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         predictFate();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // REGISTRAČNÍ MODAL
-    // ─────────────────────────────────────────────────────────────────────────────
-    function openRegModal() {
-        trackEvent('nav_click', { nav_item: 'registrace' });
-        // Predvyplníme email ak ho už máme
-        const savedEmail = localStorage.getItem('userEmail') || '';
-        document.getElementById('reg-email').value = savedEmail;
-        openPopup('reg-modal');
-    }
+   // ─────────────────────────────────────────────────────────────────────────────
+// REGISTRAČNÍ MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+function openRegModal() {
+    trackEvent('nav_click', { nav_item: 'registrace' }); [cite: 442]
+    // Predvyplníme email ak ho už máme
+    const savedEmail = localStorage.getItem('userEmail') || ''; [cite: 443]
+    document.getElementById('reg-email').value = savedEmail; [cite: 444]
+    openPopup('reg-modal'); [cite: 444]
+}
 
-    function updateFileLabel(input) {
-        const label = document.getElementById('reg-file-label');
-        if (input.files && input.files[0]) {
-            label.textContent = '✅ ' + input.files[0].name;
+function updateFileLabel(input) {
+    const label = document.getElementById('reg-file-label'); [cite: 445]
+    if (input.files && input.files[0]) {
+        label.textContent = '✅ ' + input.files[0].name; [cite: 445]
+    }
+}
+
+function submitRegForm() {
+    const firstname = document.getElementById('reg-firstname').value.trim(); [cite: 447]
+    const lastname  = document.getElementById('reg-lastname').value.trim(); [cite: 447]
+    const email     = document.getElementById('reg-email').value.trim(); [cite: 448]
+    const cv        = document.getElementById('reg-cv').files[0]; [cite: 449]
+    const btn       = document.getElementById('reg-submit-btn'); [cite: 450]
+
+    if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.'); [cite: 450]
+    if (!email.includes('@'))    return alert('Zadejte platný e-mail.'); [cite: 450]
+
+    btn.innerText = 'Ukládám profil...'; [cite: 451]
+    btn.disabled  = true; [cite: 451]
+
+    const formData = new FormData(); [cite: 452]
+    formData.append('Jmeno',     firstname); [cite: 452]
+    formData.append('Prijmeni',  lastname); [cite: 452]
+    formData.append('Email',     email); [cite: 452]
+    if (cv) formData.append('CV', cv); [cite: 452]
+
+    // OPRAVA: Odstraněna hlavička 'Accept', aby prohlížeč mohl korektně nastavit multipart/form-data
+    fetch('https://formspree.io/f/xjglozoq', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => {
+        if (res.ok) {
+            localStorage.setItem('userEmail', email); [cite: 453]
+            sessionStorage.setItem('emailConfirmed', 'yes'); [cite: 454]
+            document.getElementById('user-email').value = email; [cite: 454]
+            trackEvent('registration_submitted', { has_cv: !!cv }); [cite: 454]
+            btn.innerText = 'Profil vytvořen ✓'; [cite: 454]
+            setTimeout(() => {
+                closePopup('reg-modal'); [cite: 455]
+                btn.innerText = 'Vytvořit profil'; [cite: 455]
+                btn.disabled  = false; [cite: 455]
+            }, 1400);
+        } else {
+            return res.json().then(data => {
+                alert('Nepodařilo se odeslat formulář. Zkontrolujte, zda není soubor příliš velký.'); [cite: 456]
+                btn.innerText = 'Vytvořit profil'; [cite: 456]
+                btn.disabled  = false; [cite: 456]
+            });
         }
-    }
-
-    function submitRegForm() {
-        const firstname = document.getElementById('reg-firstname').value.trim();
-        const lastname  = document.getElementById('reg-lastname').value.trim();
-        const email     = document.getElementById('reg-email').value.trim();
-        const cv        = document.getElementById('reg-cv').files[0];
-        const btn       = document.getElementById('reg-submit-btn');
-
-        if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.');
-        if (!email.includes('@'))    return alert('Zadejte platný e-mail.');
-
-        btn.innerText = 'Ukládám profil...';
-        btn.disabled  = true;
-
-        const formData = new FormData();
-        formData.append('Jmeno',     firstname);
-        formData.append('Prijmeni',  lastname);
-        formData.append('Email',     email);
-        if (cv) formData.append('CV', cv);
-
-        fetch('https://formspree.io/f/xjglozoq', {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(res => {
-            if (res.ok) {
-                localStorage.setItem('userEmail', email);
-                sessionStorage.setItem('emailConfirmed', 'yes');
-                document.getElementById('user-email').value = email;
-                trackEvent('registration_submitted', { has_cv: !!cv });
-                btn.innerText = 'Profil vytvořen ✓';
-                setTimeout(() => {
-                    closePopup('reg-modal');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
-                }, 1400);
-            } else {
-                return res.json().then(data => {
-                    alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
-                });
-            }
-        })
-        .catch(() => {
-            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
-            btn.innerText = 'Vytvořit profil';
-            btn.disabled  = false;
-        });
-    }
+    })
+    .catch(() => {
+        alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.'); [cite: 457]
+        btn.innerText = 'Vytvořit profil'; [cite: 457]
+        btn.disabled  = false; [cite: 457]
+    });
+}
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
     </script>

@@ -1407,74 +1407,73 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         predictFate();
     }
 
-   // ─────────────────────────────────────────────────────────────────────────────
-// REGISTRAČNÍ MODAL
-// ─────────────────────────────────────────────────────────────────────────────
-function openRegModal() {
-    trackEvent('nav_click', { nav_item: 'registrace' }); [cite: 442]
-    // Predvyplníme email ak ho už máme
-    const savedEmail = localStorage.getItem('userEmail') || ''; [cite: 443]
-    document.getElementById('reg-email').value = savedEmail; [cite: 444]
-    openPopup('reg-modal'); [cite: 444]
-}
-
-function updateFileLabel(input) {
-    const label = document.getElementById('reg-file-label'); [cite: 445]
-    if (input.files && input.files[0]) {
-        label.textContent = '✅ ' + input.files[0].name; [cite: 445]
+    // ─────────────────────────────────────────────────────────────────────────────
+    // REGISTRAČNÍ MODAL
+    // ─────────────────────────────────────────────────────────────────────────────
+    function openRegModal() {
+        trackEvent('nav_click', { nav_item: 'registrace' }); [cite: 442]
+        const savedEmail = localStorage.getItem('userEmail') || ''; [cite: 443, 444]
+        document.getElementById('reg-email').value = savedEmail; [cite: 444]
+        openPopup('reg-modal'); [cite: 444]
     }
-}
 
-function submitRegForm() {
-    const firstname = document.getElementById('reg-firstname').value.trim(); [cite: 447]
-    const lastname  = document.getElementById('reg-lastname').value.trim(); [cite: 447]
-    const email     = document.getElementById('reg-email').value.trim(); [cite: 448]
-    const cv        = document.getElementById('reg-cv').files[0]; [cite: 449]
-    const btn       = document.getElementById('reg-submit-btn'); [cite: 450]
-
-    if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.'); [cite: 450]
-    if (!email.includes('@'))    return alert('Zadejte platný e-mail.'); [cite: 450]
-
-    btn.innerText = 'Ukládám profil...'; [cite: 451]
-    btn.disabled  = true; [cite: 451]
-
-    const formData = new FormData(); [cite: 452]
-    formData.append('Jmeno',     firstname); [cite: 452]
-    formData.append('Prijmeni',  lastname); [cite: 452]
-    formData.append('Email',     email); [cite: 452]
-    if (cv) formData.append('CV', cv); [cite: 452]
-
-    // OPRAVA: Odstraněna hlavička 'Accept', aby prohlížeč mohl korektně nastavit multipart/form-data
-    fetch('https://formspree.io/f/xjglozoq', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => {
-        if (res.ok) {
-            localStorage.setItem('userEmail', email); [cite: 453]
-            sessionStorage.setItem('emailConfirmed', 'yes'); [cite: 454]
-            document.getElementById('user-email').value = email; [cite: 454]
-            trackEvent('registration_submitted', { has_cv: !!cv }); [cite: 454]
-            btn.innerText = 'Profil vytvořen ✓'; [cite: 454]
-            setTimeout(() => {
-                closePopup('reg-modal'); [cite: 455]
-                btn.innerText = 'Vytvořit profil'; [cite: 455]
-                btn.disabled  = false; [cite: 455]
-            }, 1400);
-        } else {
-            return res.json().then(data => {
-                alert('Nepodařilo se odeslat formulář. Zkontrolujte, zda není soubor příliš velký.'); [cite: 456]
-                btn.innerText = 'Vytvořit profil'; [cite: 456]
-                btn.disabled  = false; [cite: 456]
-            });
+    function updateFileLabel(input) {
+        const label = document.getElementById('reg-file-label'); [cite: 445]
+        if (input.files && input.files[0]) {
+            label.textContent = '✅ ' + input.files[0].name; [cite: 446]
         }
-    })
-    .catch(() => {
-        alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.'); [cite: 457]
-        btn.innerText = 'Vytvořit profil'; [cite: 457]
-        btn.disabled  = false; [cite: 457]
-    });
-}
+    }
+
+    function submitRegForm() {
+        const firstname = document.getElementById('reg-firstname').value.trim(); [cite: 447]
+        const lastname  = document.getElementById('reg-lastname').value.trim(); [cite: 448]
+        const email     = document.getElementById('reg-email').value.trim(); [cite: 449]
+        const cv        = document.getElementById('reg-cv').files[0]; [cite: 450]
+        const btn       = document.getElementById('reg-submit-btn'); [cite: 451]
+
+        if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.'); [cite: 452]
+        if (!email.includes('@'))    return alert('Zadejte platný e-mail.'); [cite: 453]
+
+        btn.innerText = 'Ukládám profil...'; [cite: 454]
+        btn.disabled  = true; [cite: 454]
+
+        const formData = new FormData(); [cite: 455]
+        formData.append('Jmeno',     firstname); [cite: 456]
+        formData.append('Prijmeni',  lastname); [cite: 456]
+        formData.append('Email',     email); [cite: 457]
+        if (cv) formData.append('CV', cv); [cite: 457]
+
+        // OPRAVA: Odstraněna hlavička 'Accept', aby prohlížeč mohl korektně nastavit multipart/form-data [cite: 458]
+        fetch('https://formspree.io/f/xjglozoq', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => {
+            if (res.ok) {
+                localStorage.setItem('userEmail', email); [cite: 458]
+                sessionStorage.setItem('emailConfirmed', 'yes'); [cite: 458]
+                document.getElementById('user-email').value = email; [cite: 458]
+                trackEvent('registration_submitted', { has_cv: !!cv }); [cite: 458]
+                btn.innerText = 'Profil vytvořen ✓'; [cite: 459]
+                setTimeout(() => {
+                    closePopup('reg-modal'); [cite: 459]
+                    btn.innerText = 'Vytvořit profil'; [cite: 459]
+                    btn.disabled  = false; [cite: 459]
+                }, 1400);
+            } else {
+                return res.json().then(data => {
+                    alert('Nepodařilo se odeslat formulář. Zkontrolujte, zda není soubor příliš velký.'); [cite: 460]
+                    btn.innerText = 'Vytvořit profil'; [cite: 460]
+                    btn.disabled  = false; [cite: 461]
+                });
+            }
+        })
+        .catch(() => {
+            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.'); [cite: 463]
+            btn.innerText = 'Vytvořit profil'; [cite: 463]
+            btn.disabled  = false; [cite: 463]
+        });
+    }
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
     </script>

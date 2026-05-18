@@ -1430,54 +1430,77 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
     }
 
     function submitRegForm() {
-        const firstname = document.getElementById('reg-firstname').value.trim();
-        const lastname  = document.getElementById('reg-lastname').value.trim();
-        const email     = document.getElementById('reg-email').value.trim();
-        const cv        = document.getElementById('reg-cv').files[0];
-        const btn       = document.getElementById('reg-submit-btn');
+       async function submitRegForm() {
+    const firstname = document.getElementById('reg-firstname').value.trim();
+    const lastname  = document.getElementById('reg-lastname').value.trim();
+    const email     = document.getElementById('reg-email').value.trim();
+    const cv        = document.getElementById('reg-cv').files[0];
+    const btn       = document.getElementById('reg-submit-btn');
 
-        if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.');
-        if (!email.includes('@'))    return alert('Zadejte platný e-mail.');
+    if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.');
+    if (!email.includes('@'))    return alert('Zadejte platný e-mail.');
 
-        btn.innerText = 'Ukládám profil...';
-        btn.disabled  = true;
+    btn.innerText = 'Ukládám profil...';
+    btn.disabled  = true;
 
-        const formData = new FormData();
-        formData.append('Jmeno',     firstname);
-        formData.append('Prijmeni',  lastname);
-        formData.append('Email',     email);
-        if (cv) formData.append('CV', cv);
+    let cvUrl = '';
 
-        fetch('https://formspree.io/f/xjglozoq', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(res => {
-            if (res.ok) {
-                localStorage.setItem('userEmail', email);
-                sessionStorage.setItem('emailConfirmed', 'yes');
-                document.getElementById('user-email').value = email;
-                trackEvent('registration_submitted', { has_cv: !!cv });
-                btn.innerText = 'Profil vytvořen ✓';
-                setTimeout(() => {
-                    closePopup('reg-modal');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
-                }, 1400);
-            } else {
-                return res.json().then(data => {
-                    alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
-                });
-            }
-        })
-        .catch(() => {
-            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
+    if (cv) {
+        try {
+            const cloudData = new FormData();
+            cloudData.append('file', cv);
+            cloudData.append('upload_preset', 'cv_upload');
+            const cloudRes = await fetch(
+                'https://api.cloudinary.com/v1_1/dlrexru2g/raw/upload',
+                { method: 'POST', body: cloudData }
+            );
+            const cloudJson = await cloudRes.json();
+            cvUrl = cloudJson.secure_url;
+        } catch (e) {
+            alert('Nepodařilo se nahrát CV. Zkuste to znovu.');
             btn.innerText = 'Vytvořit profil';
             btn.disabled  = false;
-        });
+            return;
+        }
     }
+
+    const formData = new FormData();
+    formData.append('Jmeno',    firstname);
+    formData.append('Prijmeni', lastname);
+    formData.append('Email',    email);
+    if (cvUrl) formData.append('CV_URL', cvUrl);
+
+    fetch('https://formspree.io/f/xjglozoq', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData,
+    })
+    .then(res => {
+        if (res.ok) {
+            localStorage.setItem('userEmail', email);
+            sessionStorage.setItem('emailConfirmed', 'yes');
+            document.getElementById('user-email').value = email;
+            trackEvent('registration_submitted', { has_cv: !!cv });
+            btn.innerText = 'Profil vytvořen ✓';
+            setTimeout(() => {
+                closePopup('reg-modal');
+                btn.innerText = 'Vytvořit profil';
+                btn.disabled  = false;
+            }, 1400);
+        } else {
+            return res.json().then(data => {
+                alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
+                btn.innerText = 'Vytvořit profil';
+                btn.disabled  = false;
+            });
+        }
+    })
+    .catch(() => {
+        alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
+        btn.innerText = 'Vytvořit profil';
+        btn.disabled  = false;
+    });
+}
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
     </script>

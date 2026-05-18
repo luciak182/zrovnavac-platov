@@ -1455,8 +1455,10 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
                 { method: 'POST', body: cloudData }
             );
             const cloudJson = await cloudRes.json();
+            console.log('Cloudinary response:', cloudJson);
             cvUrl = cloudJson.secure_url;
-        } catch (e) {
+            console.log('CV URL:', cvUrl);
+        } catch (e) {;
             alert('Nepodařilo se nahrát CV. Zkuste to znovu.');
             btn.innerText = 'Vytvořit profil';
             btn.disabled  = false;

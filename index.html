@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>    
@@ -1425,60 +1426,56 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         }
     }
 
-   async function submitRegForm() {
-    const firstname = document.getElementById('reg-firstname').value.trim();
-    const lastname  = document.getElementById('reg-lastname').value.trim();
-    const email     = document.getElementById('reg-email').value.trim();
-    const cv        = document.getElementById('reg-cv').files[0];
-    const btn       = document.getElementById('reg-submit-btn');
+    function submitRegForm() {
+        const firstname = document.getElementById('reg-firstname').value.trim();
+        const lastname  = document.getElementById('reg-lastname').value.trim();
+        const email     = document.getElementById('reg-email').value.trim();
+        const cv        = document.getElementById('reg-cv').files[0];
+        const btn       = document.getElementById('reg-submit-btn');
 
-    if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.');
-    if (!email.includes('@'))    return alert('Zadejte platný e-mail.');
+        if (!firstname || !lastname) return alert('Vyplňte prosím jméno a příjmení.');
+        if (!email.includes('@'))    return alert('Zadejte platný e-mail.');
 
-    btn.innerText = 'Ukládám profil...';
-    btn.disabled  = true;
+        btn.innerText = 'Ukládám profil...';
+        btn.disabled  = true;
 
-    emailjs.init('9XgPNVDfgAn2keuCU');
+        const formData = new FormData();
+        formData.append('Jmeno',     firstname);
+        formData.append('Prijmeni',  lastname);
+        formData.append('Email',     email);
+        if (cv) formData.append('CV', cv);
 
-    const templateParams = {
-        jmeno:    firstname,
-        prijmeni: lastname,
-        email:    email,
-        cv_url:   cv ? cv.name : 'CV nebolo nahraté',
-    };
-
-    // Ak je CV, prevedieme ho na base64 a pridáme ako prílohu
-    if (cv) {
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-        });
-        templateParams.cv_content = await toBase64(cv);
-        templateParams.cv_name    = cv.name;
-    }
-
-    emailjs.send('service_110ciyo', 'template_bmwvu4q', templateParams)
-    .then(() => {
-        localStorage.setItem('userEmail', email);
-        sessionStorage.setItem('emailConfirmed', 'yes');
-        document.getElementById('user-email').value = email;
-        trackEvent('registration_submitted', { has_cv: !!cv });
-        btn.innerText = 'Profil vytvořen ✓';
-        setTimeout(() => {
-            closePopup('reg-modal');
+        fetch('https://formspree.io/f/xjglozoq', {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => {
+            if (res.ok) {
+                localStorage.setItem('userEmail', email);
+                sessionStorage.setItem('emailConfirmed', 'yes');
+                document.getElementById('user-email').value = email;
+                trackEvent('registration_submitted', { has_cv: !!cv });
+                btn.innerText = 'Profil vytvořen ✓';
+                setTimeout(() => {
+                    closePopup('reg-modal');
+                    btn.innerText = 'Vytvořit profil';
+                    btn.disabled  = false;
+                }, 1400);
+            } else {
+                return res.json().then(data => {
+                    alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
+                    btn.innerText = 'Vytvořit profil';
+                    btn.disabled  = false;
+                });
+            }
+        })
+        .catch(() => {
+            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
             btn.innerText = 'Vytvořit profil';
             btn.disabled  = false;
-        }, 1400);
-    })
-    .catch((error) => {
-        console.log('EmailJS chyba:', error);
-        alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
-        btn.innerText = 'Vytvořit profil';
-        btn.disabled  = false;
-    });
-}
+        });
+    }
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
     </script>

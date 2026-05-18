@@ -33,6 +33,7 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
       gtag('js', new Date());
       gtag('config', 'G-8XH9RB240N');
     </script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
@@ -1430,6 +1431,7 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
     }
 
        async function submitRegForm() {
+   async function submitRegForm() {
     const firstname = document.getElementById('reg-firstname').value.trim();
     const lastname  = document.getElementById('reg-lastname').value.trim();
     const email     = document.getElementById('reg-email').value.trim();
@@ -1442,36 +1444,46 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
     btn.innerText = 'Ukládám profil...';
     btn.disabled  = true;
 
-    let cvUrl = '';
+    emailjs.init('9XgPNVDfgAn2keuCU');
 
+    const templateParams = {
+        jmeno:    firstname,
+        prijmeni: lastname,
+        email:    email,
+        cv_url:   cv ? cv.name : 'CV nebolo nahraté',
+    };
+
+    // Ak je CV, prevedieme ho na base64 a pridáme ako prílohu
     if (cv) {
-    try {
         const toBase64 = file => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onload = () => resolve(reader.result);
             reader.onerror = reject;
         });
+        templateParams.cv_content = await toBase64(cv);
+        templateParams.cv_name    = cv.name;
+    }
 
-        const base64 = await toBase64(cv);
-
-        const uploadData = new FormData();
-        uploadData.append('file', base64);
-        uploadData.append('filename', cv.name);
-        uploadData.append('mimeType', cv.type);
-
-        const uploadRes = await fetch(
-            'https://script.google.com/macros/s/AKfycbxqT-O8bCwHvpLWipID35DhuV1KR4unv_NmbuvWqSgi_7ki1JnvY87SeDaqt9fgflF3/exec',
-            { method: 'POST', body: uploadData }
-        );
-        const uploadJson = await uploadRes.json();
-        cvUrl = uploadJson.url;
-    } catch (e) {
-        alert('Nepodařilo se nahrát CV. Zkuste to znovu.');
+    emailjs.send('service_110ciyo', 'template_bmwvu4q', templateParams)
+    .then(() => {
+        localStorage.setItem('userEmail', email);
+        sessionStorage.setItem('emailConfirmed', 'yes');
+        document.getElementById('user-email').value = email;
+        trackEvent('registration_submitted', { has_cv: !!cv });
+        btn.innerText = 'Profil vytvořen ✓';
+        setTimeout(() => {
+            closePopup('reg-modal');
+            btn.innerText = 'Vytvořit profil';
+            btn.disabled  = false;
+        }, 1400);
+    })
+    .catch((error) => {
+        console.log('EmailJS chyba:', error);
+        alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
         btn.innerText = 'Vytvořit profil';
         btn.disabled  = false;
-        return;
-    }
+    });
 }
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu

@@ -922,7 +922,7 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         if (ind) trackEvent('salary_filter_select', { filter_name: 'odvetvi', filter_value: slugify(ind) });
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, trackClick = true) {
         const tabs = ['salary', 'ai', 'job'];
         tabs.forEach(t => {
             document.getElementById('content-' + t).classList.add('hidden');
@@ -933,10 +933,24 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         document.getElementById('tab-' + tab).classList.add('bg-blue-600', 'text-white');
         document.getElementById('tab-' + tab).classList.remove('text-gray-500');
 
-        // GA4 — tab_click
-        const tabNames = { salary: 'srovnej_mzdu', ai: 'kdy_te_nahradi_ai', job: 'najdi_praci' };
-        trackEvent('tab_click', { tab_name: tabNames[tab] || tab });
+        // Aktualizujeme hash v URL bez skoku stránky (replaceState)
+        history.replaceState(null, '', '#' + tab);
+
+        // GA4 — tab_click (len pri skutočnom kliknutí, nie pri init z URL)
+        if (trackClick) {
+            const tabNames = { salary: 'srovnej_mzdu', ai: 'kdy_te_nahradi_ai', job: 'najdi_praci' };
+            trackEvent('tab_click', { tab_name: tabNames[tab] || tab });
+        }
     }
+
+    // Pri načítaní stránky: ak je v URL hash (#job, #ai, #salary), otvoríme správny tab
+    (function initTabFromHash() {
+        const validTabs = ['salary', 'ai', 'job'];
+        const hash = window.location.hash.replace('#', '');
+        if (validTabs.includes(hash)) {
+            switchTab(hash, false); // false = nelogujeme tab_click, zákazník neprišiel cez klik
+        }
+    })();
 
     function openPopup(id)  {
         const el = document.getElementById(id);

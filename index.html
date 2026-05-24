@@ -1445,6 +1445,20 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         formData.append('Email',     email);
         if (cv) formData.append('CV', cv);
 
+        // Spoločná funkcia pre úspešný stav — zobrazí sa vždy (aj pri tichom zlyhaní)
+        function handleSuccess() {
+            localStorage.setItem('userEmail', email);
+            sessionStorage.setItem('emailConfirmed', 'yes');
+            document.getElementById('user-email').value = email;
+            trackEvent('registration_submitted', { has_cv: !!cv });
+            btn.innerText = 'Profil vytvořen ✓';
+            setTimeout(() => {
+                closePopup('reg-modal');
+                btn.innerText = 'Vytvořit profil';
+                btn.disabled  = false;
+            }, 1400);
+        }
+
         fetch('https://formspree.io/f/xjglozoq', {
             method: 'POST',
             body: formData,
@@ -1452,28 +1466,27 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
         })
         .then(res => {
             if (res.ok) {
-                localStorage.setItem('userEmail', email);
-                sessionStorage.setItem('emailConfirmed', 'yes');
-                document.getElementById('user-email').value = email;
-                trackEvent('registration_submitted', { has_cv: !!cv });
-                btn.innerText = 'Profil vytvořen ✓';
-                setTimeout(() => {
-                    closePopup('reg-modal');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
-                }, 1400);
+                handleSuccess();
             } else {
-                return res.json().then(data => {
-                    alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
-                    btn.innerText = 'Vytvořit profil';
-                    btn.disabled  = false;
+                // Odoslanie formulára zlyhalo na strane servera — zákazník o tom nevie,
+                // chyba sa potichu zaloguje do GA4
+                trackEvent('form_submitted_error', {
+                    form_id:    'registration',
+                    has_cv:     !!cv,
+                    error_type: 'server_error',
+                    status_code: res.status
                 });
+                handleSuccess();
             }
         })
         .catch(() => {
-            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
-            btn.innerText = 'Vytvořit profil';
-            btn.disabled  = false;
+            // Sieťová chyba (napr. timeout, offline) — rovnako tichý fail + GA4 log
+            trackEvent('form_submitted_error', {
+                form_id:    'registration',
+                has_cv:     !!cv,
+                error_type: 'network_error'
+            });
+            handleSuccess();
         });
     }
 

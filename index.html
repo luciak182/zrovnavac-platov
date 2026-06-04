@@ -1369,16 +1369,30 @@ src="https://www.facebook.com/tr?id=991618753231936&ev=PageView&noscript=1"
     // ─────────────────────────────────────────────────────────────────────────────
 
     // Centrální wrapper — pokud gtag není dostupný (blokátor), tiše selže
-    function trackEvent(eventName, params) {
-        try {
-            console.log('[GA4 Event]', eventName, params);
-            if (typeof gtag === 'function') {
-                gtag('event', eventName, params);
+function trackEvent(eventName, params) {
+    try {
+        console.log('[GA4 Event]', eventName, params);
+        if (typeof gtag === 'function') {
+            gtag('event', eventName, params);
+
+            // Google Ads konverzie
+            if (eventName === 'popup_email_submitted') {
+                gtag('event', 'conversion', {
+                    send_to:  'AW-18205896793/2DiJCIH9-7gcENngn-lD',
+                    value:    1.0,
+                    currency: 'CZK'
+                });
             }
-        } catch (e) {
-            // gtag blokováno rozšířením prohlížeče — ignorujeme
+            if (eventName === 'registration_submitted') {
+                gtag('event', 'conversion', {
+                    send_to: 'AW-18205896793/wjZ3CJWQ-7gcENngn-lD'
+                });
+            }
         }
+    } catch (e) {
+        // gtag blokováno rozšířením prohlížeče — ignorujeme
     }
+}
 
     // Převod textu na GA4-friendly slug: malá písmena, bez diakritiky, mezery → podtržítko
     function slugify(str) {

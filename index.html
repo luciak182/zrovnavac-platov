@@ -185,6 +185,138 @@ main{background:var(--bg);min-height:400px}
 .job-fields{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .job-fields .field-input{flex:1;min-width:200px}
 
+/* BROWSE TAB — JOB CARDS */
+.section-label-browse{
+  text-align:center;
+  font-family:var(--fd);font-weight:700;
+  font-size:clamp(24px,3vw,36px);
+  color:var(--ink);
+  margin-bottom:28px;
+}
+.section-label-browse b{color:var(--purple)}
+
+.browse-cards-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  max-width:1140px;
+  margin:0 auto;
+}
+@media(max-width:1080px){.browse-cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){
+  .browse-cards-grid{grid-template-columns:1fr}
+  .jcard-desktop-only{display:none}
+}
+
+/* JOB CARD */
+.jcard{
+  background:var(--card);
+  border:1px solid var(--line-2);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:18px 18px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  transition:box-shadow .25s,border-color .25s,transform .22s;
+  cursor:pointer;
+}
+.jcard:hover{
+  border-color:rgba(126,0,216,.22);
+  box-shadow:0 1px 2px rgba(15,15,22,.04),0 28px 52px -28px rgba(126,0,216,.28);
+  transform:translateY(-3px);
+}
+.jcard-top{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;
+}
+.scorebox{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.matchlabel{font-weight:600;font-size:10.5px;text-align:center;white-space:nowrap}
+.jcard-company{font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.jcard-title{font-family:var(--fd);font-weight:700;font-size:16px;line-height:1.18;margin-bottom:8px;color:var(--ink)}
+.jcard-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.jcard-meta-row{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft)}
+.jcard-meta-row svg{width:13px;height:13px;stroke:var(--ink-soft);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:2px}
+.tag{font-size:11px;font-weight:600;padding:4px 9px;border-radius:7px;background:var(--neutral-tint);color:var(--ink-soft)}
+.tag.purple{background:var(--purple-tint);color:var(--purple)}
+.tag.amber{background:var(--amber-tint);color:#9A5800}
+.jcard-divider{height:1px;background:var(--line-2);margin:12px 0}
+.jcard-salary{font-family:var(--fd);font-weight:700;font-size:14.5px;color:var(--ink)}
+.jcard-salary span{font-size:11.5px;font-weight:500;color:var(--ink-soft)}
+
+/* VERIFY BUTTON */
+.verify{
+  position:relative;
+  display:inline-flex;align-items:center;gap:0;
+  border:none;cursor:pointer;
+  font-family:var(--ft);font-weight:700;font-size:12px;
+  border-radius:100px;
+  padding:8px 14px 8px 11px;
+  background:var(--purple);color:#fff;
+  box-shadow:0 8px 20px -8px rgba(126,0,216,.55);
+  transition:background .2s,transform .15s,padding .35s,color .2s;
+  overflow:hidden;
+  white-space:nowrap;
+  flex:none;
+}
+.verify:hover{background:var(--purple-2);color:#fff;transform:translateY(-1px)}
+.verify.is-pill{border-radius:100px}
+
+/* label + blesk row */
+.vf-label{display:inline-flex;align-items:center;gap:5px;position:relative;z-index:2;transition:opacity .25s}
+.vf-label .blesk{width:14px;height:14px;display:inline-flex;color:var(--amber)}
+.vf-label .blesk svg{width:100%;height:100%}
+
+/* spinner (hidden by default) */
+.vf-spin{
+  display:none;width:14px;height:14px;border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;
+  animation:vfspin .7s linear infinite;
+  flex:none;
+}
+@keyframes vfspin{to{transform:rotate(360deg)}}
+
+/* confirmed blesk (hidden by default) */
+.vf-cblesk{display:none;width:14px;height:14px;color:var(--purple);flex:none}
+.vf-cblesk svg{width:100%;height:100%}
+
+/* ring (hidden by default, slides in from right) */
+.vf-ring{
+  display:none;align-items:center;justify-content:center;
+  margin-left:0;
+  transition:margin .3s;
+}
+.vf-ring svg{display:block}
+.vf-arc{transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+
+/* pct (hidden by default) */
+.vf-pct{
+  display:none;
+  font-family:var(--fd);font-weight:700;font-size:17px;line-height:1;
+  position:absolute;inset:0;align-items:center;justify-content:center;
+}
+.vf-pct span{font-size:.52em;font-weight:600;opacity:.6}
+
+/* STATE: loading */
+.verify.loading .vf-label{opacity:0;width:0;overflow:hidden;padding:0;gap:0}
+.verify.loading .vf-spin{display:block}
+
+/* STATE: done — show ring + pct, hide label/spin */
+.verify.done{
+  background:transparent!important;
+  padding:0!important;
+  color:inherit!important;
+  cursor:default;
+  pointer-events:none;
+  width:72px;height:72px;
+  border-radius:50%!important;
+  flex:none;
+}
+.verify.done .vf-label{display:none}
+.verify.done .vf-spin{display:none}
+.verify.done .vf-ring{display:flex;width:72px;height:72px}
+.verify.done .vf-pct{display:flex}
+
 /* PREVIEW SECTION (48k + cards) */
 .preview-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:32px;align-items:start;margin-bottom:80px}
 @media(max-width:840px){.preview-grid{grid-template-columns:1fr}}
@@ -302,6 +434,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
       <button class="nav-tab active" id="tab-salary" onclick="switchTab('salary')">Srovnej mzdu</button>
       <button class="nav-tab" id="tab-ai" onclick="switchTab('ai')">Kdy tě nahradí AI?</button>
       <button class="nav-tab" id="tab-job" onclick="switchTab('job')">Najdi práci</button>
+      <button class="nav-tab" id="tab-browse" onclick="switchTab('browse')">Procházet pozice</button>
     </div>
     <div class="nav-cta">
       <button class="btn-nav-ghost" onclick="trackEvent('nav_click',{nav_item:'karietni_centrum'})">📖 Kariérní centrum</button>
@@ -593,6 +726,319 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
       </div>
 
     </div><!-- /job tab -->
+
+    <!-- BROWSE TAB -->
+    <div class="tab-content" id="content-browse">
+
+      <!-- JOB CARDS GRID -->
+      <div style="padding-bottom:80px">
+        <p class="section-label-browse">Ukázkové nabídky, co vám <b>sednou.</b></p>
+
+        <div class="browse-cards-grid">
+
+          <!-- KARTA 1 — Mzdová účetní -->
+          <div class="jcard" data-pozice="mzdova_ucetni" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">Komerční banka</div>
+                <div class="jcard-title">Mzdová účetní</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="88" data-ring="#7E00D8" data-val="#7E00D8" data-label="Skvělá shoda" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#7E00D8" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#7E00D8">88<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#7E00D8"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha 1 · Hybrid 2×/týden
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Plný úvazek · Mid
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">48 000 – 62 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">Finance</span>
+              <span class="tag">Pohoda</span>
+              <span class="tag">Excel</span>
+              <span class="tag amber">Hybrid</span>
+            </div>
+          </div>
+
+          <!-- KARTA 2 — Marketingový specialista -->
+          <div class="jcard" data-pozice="marketingovy_specialista" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">Alza.cz</div>
+                <div class="jcard-title">Marketingový specialista</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="85" data-ring="#7E00D8" data-val="#7E00D8" data-label="Skvělá shoda" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#7E00D8" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#7E00D8">85<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#7E00D8"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha 9 · On-site
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Plný úvazek · Mid–Senior
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">55 000 – 75 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">E-commerce</span>
+              <span class="tag purple">PPC</span>
+              <span class="tag">GA4</span>
+              <span class="tag">Meta Ads</span>
+            </div>
+          </div>
+
+          <!-- KARTA 3 — IT support -->
+          <div class="jcard" data-pozice="it_support_specialista" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">O2 Czech Republic</div>
+                <div class="jcard-title">IT Support Specialista</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="76" data-ring="#F58E1F" data-val="#D5750E" data-label="Solidní shoda" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#F58E1F" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#D5750E">76<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#D5750E"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha 4 · Hybrid
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Plný úvazek · Junior–Mid
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">38 000 – 52 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">Telco</span>
+              <span class="tag">Windows</span>
+              <span class="tag">Helpdesk</span>
+              <span class="tag amber">Hybrid</span>
+            </div>
+          </div>
+
+          <!-- KARTA 4 — Realitní makléř -->
+          <div class="jcard" data-pozice="realitni_makler" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">RE/MAX Czech Republic</div>
+                <div class="jcard-title">Realitní makléř</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="74" data-ring="#F58E1F" data-val="#D5750E" data-label="Solidní shoda" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#F58E1F" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#D5750E">74<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#D5750E"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha a okolí · Terén
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                OSVČ / HPP · Mid
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">50 000 – 120 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">Reality</span>
+              <span class="tag">Provize</span>
+              <span class="tag">Obchod</span>
+              <span class="tag amber">Flexibilní</span>
+            </div>
+          </div>
+
+          <!-- KARTA 5 — iOS developer (desktop only) -->
+          <div class="jcard jcard-desktop-only" data-pozice="ios_developer" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">Productboard</div>
+                <div class="jcard-title">iOS Developer (Swift)</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="90" data-ring="#7E00D8" data-val="#7E00D8" data-label="Skvělá shoda" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#7E00D8" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#7E00D8">90<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#7E00D8"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha 7 · Plně remote
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Plný úvazek · Senior
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">120 000 – 155 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">Startup</span>
+              <span class="tag purple">SaaS</span>
+              <span class="tag">Swift</span>
+              <span class="tag amber">Remote</span>
+            </div>
+          </div>
+
+          <!-- KARTA 6 — Učitel fyziky (desktop only) -->
+          <div class="jcard jcard-desktop-only" data-pozice="ucitel_fyziky" onclick="openRegModal(this)">
+            <div class="jcard-top">
+              <div style="flex:1;min-width:0">
+                <div class="jcard-company">Gymnázium Jana Nerudy</div>
+                <div class="jcard-title">Učitel fyziky</div>
+              </div>
+              <div class="scorebox">
+                <button class="verify is-pill" data-score="55" data-ring="#DB4E33" data-val="#C9412B" data-label="Spíš ne" onclick="event.stopPropagation();openRegModal(this.closest('.jcard'))">
+                  <span class="vf-label"><span class="blesk" data-blesk></span>Ověřit shodu</span>
+                  <span class="vf-spin"></span>
+                  <span class="vf-cblesk" data-blesk></span>
+                  <span class="vf-ring"><svg width="72" height="72" viewBox="0 0 88 88"><circle cx="44" cy="44" r="39" fill="none" stroke="var(--bg-2)" stroke-width="8"/><circle class="vf-arc" cx="44" cy="44" r="39" fill="none" stroke="#DB4E33" stroke-width="8" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 44 44)"/></svg></span>
+                  <span class="vf-pct" style="color:#C9412B">55<span>%</span></span>
+                </button>
+                <div class="matchlabel" style="color:#C9412B"></div>
+              </div>
+            </div>
+            <div class="jcard-meta">
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                Praha 1 · On-site
+              </div>
+              <div class="jcard-meta-row">
+                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Plný úvazek · Mid
+              </div>
+            </div>
+            <div class="jcard-divider"></div>
+            <div class="jcard-salary">38 000 – 48 000 Kč <span>/ měsíc</span></div>
+            <div class="tags" style="margin-top:10px">
+              <span class="tag purple">Školství</span>
+              <span class="tag">Pedagogika</span>
+              <span class="tag">Fyzika</span>
+              <span class="tag amber">On-site</span>
+            </div>
+          </div>
+
+        </div><!-- /browse-cards-grid -->
+
+        <!-- CTA pod kartami -->
+        <div style="text-align:center;margin-top:40px">
+          <p style="font-size:15px;color:var(--ink-soft);margin-bottom:16px">Toto jsou jen ukázkové nabídky. Přihlaste se a zobrazte všech <strong>48 000+</strong> pozic seřazených podle shody s vámi.</p>
+          <button class="btn-amber-big" onclick="openRegModal()"><span class="blesk" data-blesk-browse style="color:var(--ink)"></span><span style="color:var(--ink);font-weight:700">Zobrazit všechny nabídky →</span></button>
+        </div>
+      </div>
+
+      <!-- USP — stejné jako v job tabu -->
+      <div style="padding-top:72px">
+        <div class="sec-head">
+          <span class="eyebrow"><span class="dot"></span>Proč Pracevkanclu.cz</span>
+          <h2>To, co jinde nenajdete.</h2>
+        </div>
+        <div class="usp-grid" style="margin-top:40px">
+          <div class="card usp-card">
+            <span class="kicker" style="color:var(--ink-soft)">Vše na jednom místě</span>
+            <ol>
+              <li><span class="n">1</span><span>Všechny inzeráty z Česka na jednom místě.</span></li>
+              <li><span class="n">2</span><span>Na klik je seřadíme a oskórujeme podle vašeho životopisu.</span></li>
+            </ol>
+          </div>
+          <div class="card usp-card usp-means">
+            <span class="kicker" style="color:var(--ink-soft);display:block;margin-bottom:0">Co to pro vás znamená</span>
+            <p class="means-text">Místo hodin přebírání se v nerelevantních nabídkách na různých místech najdete <b>přesně tu, kam se nejlépe hodíte</b> a kde najdete svoje štěstí.</p>
+          </div>
+        </div>
+        <div class="card cvband" style="margin-top:20px">
+          <div class="cvic"><span class="blesk" data-blesk-browse2 style="width:26px;height:26px"></span></div>
+          <div class="cvtx">
+            <span class="kicker">Nemáte ještě životopis?</span>
+            <h3>Vytvoříme vám ho pomocí AI.</h3>
+            <p>Odpovíte na pár otázek a Pracevkanclu.cz sestaví profesionální životopis — se kterým rovnou najdete svoje shody.</p>
+          </div>
+          <button class="btn-tool" onclick="openRegModal()"><span class="blesk" data-blesk-browse3 style="color:#fff;width:18px;height:18px"></span>Vytvořit CV s AI</button>
+        </div>
+      </div>
+
+      <!-- STEPS — stejné jako v job tabu -->
+      <div style="padding-top:72px">
+        <div class="sec-head">
+          <span class="eyebrow"><span class="dot"></span>Jak to funguje</span>
+          <h2>Tři kroky k té správné nabídce.</h2>
+        </div>
+        <div class="steps-grid">
+          <div class="card step">
+            <div class="idx">01</div>
+            <h3>Nahrajte životopis</h3>
+            <p>Stačí PDF — nebo si ho rovnou vytvořte s AI. Joober si z něj přečte vaše dovednosti i kariérní směr.</p>
+          </div>
+          <div class="card step">
+            <div class="idx">02</div>
+            <h3>Spusťte AI analýzu</h3>
+            <p>Jedním klikem projedeme všechny pozice z Česka a porovnáme je s vaším profilem.</p>
+          </div>
+          <div class="card step">
+            <div class="idx">03</div>
+            <h3>Dostanete žebříček</h3>
+            <p>Pozice seřazené a oskórované přesně podle vás — s vysvětlením, proč sedí a kde to skřípe.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINAL BANNER -->
+      <div class="final-banner">
+        <div class="fg"></div><div class="fnz"></div>
+        <h2>Vaše příští práce<br>na vás čeká.</h2>
+        <p>Nahrajte životopis a za 30 vteřin objevíte příležitosti přesně pro vás.</p>
+        <div style="margin-top:28px">
+          <button class="btn-amber-big" onclick="openRegModal()"><span class="blesk" data-blesk-browse4></span>Spustit AI analýzu zdarma →</button>
+        </div>
+      </div>
+
+    </div><!-- /browse tab -->
   </div>
 </main>
 
@@ -601,6 +1047,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
     <div class="foot-brand"><div class="foot-icon">P</div>Pracevkanclu.cz</div>
     <div class="foot-links">
       <a href="#" onclick="switchTab('job');return false">Najdi práci</a>
+      <a href="#" onclick="switchTab('browse');return false">Procházet pozice</a>
       <a href="#" onclick="openRegModal();return false">Pro zaměstnavatele</a>
       <a href="#">FAQ</a>
       <a href="#">Kontakt</a>
@@ -663,6 +1110,10 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
 var bleskTpl = document.getElementById('bleskTpl');
 document.querySelectorAll('[data-blesk]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
 document.querySelectorAll('[data-blesk-sb]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
+document.querySelectorAll('[data-blesk-browse]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
+document.querySelectorAll('[data-blesk-browse2]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
+document.querySelectorAll('[data-blesk-browse3]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
+document.querySelectorAll('[data-blesk-browse4]').forEach(function(el){ el.appendChild(bleskTpl.content.cloneNode(true)); });
 
 // ---- SCORE RINGS ----
 (function(){
@@ -690,11 +1141,12 @@ document.querySelectorAll('[data-blesk-sb]').forEach(function(el){ el.appendChil
 var heroTaglines = {
   salary: 'Zjisti co skutečně<br>vydělávají ostatní.',
   ai: 'Připrav se na<br>budoucnost.',
-  job: 'Najděte práci, kam<br>doopravdy patříte.'
+  job: 'Najděte práci, kam<br>doopravdy patříte.',
+  browse: 'Najděte práci, kam<br>doopravdy patříte.'
 };
 function switchTab(tab, trackClick) {
   if(trackClick === undefined) trackClick = true;
-  ['salary','ai','job'].forEach(function(t){
+  ['salary','ai','job','browse'].forEach(function(t){
     document.getElementById('content-'+t).classList.remove('active');
     document.getElementById('tab-'+t).classList.remove('active');
   });
@@ -704,7 +1156,7 @@ function switchTab(tab, trackClick) {
   var searchArea = document.getElementById('hero-search-area');
   var tagline = document.getElementById('hero-tagline');
   if(searchArea){
-    if(tab === 'job'){
+    if(tab === 'job' || tab === 'browse'){
       searchArea.classList.remove('hidden-area');
     } else {
       searchArea.classList.add('hidden-area');
@@ -715,12 +1167,12 @@ function switchTab(tab, trackClick) {
   }
   history.replaceState(null, '', '#'+tab);
   if(trackClick){
-    var tabNames = {salary:'srovnej_mzdu', ai:'kdy_te_nahradi_ai', job:'najdi_praci'};
+    var tabNames = {salary:'srovnej_mzdu', ai:'kdy_te_nahradi_ai', job:'najdi_praci', browse:'prochazet_pozice'};
     trackEvent('tab_click', {tab_name: tabNames[tab] || tab});
   }
 }
 (function(){
-  var valid = ['salary','ai','job'];
+  var valid = ['salary','ai','job','browse'];
   var hash = window.location.hash.replace('#','');
   var startTab = (valid.indexOf(hash) !== -1) ? hash : 'salary';
   switchTab(startTab, false);
@@ -1654,8 +2106,9 @@ function trackEvent(eventName, params) {
     // ─────────────────────────────────────────────────────────────────────────────
     // REGISTRAČNÍ MODAL
     // ─────────────────────────────────────────────────────────────────────────────
-    function openRegModal() {
-        trackEvent('nav_click', { nav_item: 'registrace' });
+    function openRegModal(sourceEl) {
+        var pozice = (sourceEl && sourceEl.dataset && sourceEl.dataset.pozice) ? sourceEl.dataset.pozice : 'registrace';
+        trackEvent('nav_click', { nav_item: 'registrace', pozice: pozice });
         // Predvyplníme email ak ho už máme
         const savedEmail = localStorage.getItem('userEmail') || '';
         document.getElementById('reg-email').value = savedEmail;
@@ -1734,7 +2187,6 @@ function trackEvent(eventName, params) {
     }
 
     // Prepojenie tlačidla "Předpovědět osud" na gated verziu
-    
 </script>
 </body>
 </html>

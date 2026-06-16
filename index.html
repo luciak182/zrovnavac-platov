@@ -434,7 +434,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
       <button class="nav-tab active" id="tab-salary" onclick="switchTab('salary')">Srovnej mzdu</button>
       <button class="nav-tab" id="tab-ai" onclick="switchTab('ai')">Kdy tě nahradí AI?</button>
       <button class="nav-tab" id="tab-job" onclick="switchTab('job')">Najdi práci</button>
-      <button class="nav-tab" id="tab-browse" onclick="switchTab('browse')">Procházet pozice</button>
+      <button class="nav-tab" id="tab-browse" onclick="switchTab('jobdetail')">Procházet pozice</button>
     </div>
     <div class="nav-cta">
       <button class="btn-nav-ghost" onclick="trackEvent('nav_click',{nav_item:'karietni_centrum'})">📖 Kariérní centrum</button>
@@ -728,7 +728,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
     </div><!-- /job tab -->
 
     <!-- BROWSE TAB -->
-    <div class="tab-content" id="content-browse">
+    <div class="tab-content" id="content-jobdetail">
 
       <!-- JOB CARDS GRID -->
       <div style="padding-bottom:80px">
@@ -1047,7 +1047,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
     <div class="foot-brand"><div class="foot-icon">P</div>Pracevkanclu.cz</div>
     <div class="foot-links">
       <a href="#" onclick="switchTab('job');return false">Najdi práci</a>
-      <a href="#" onclick="switchTab('browse');return false">Procházet pozice</a>
+      <a href="#" onclick="switchTab('jobdetail');return false">Procházet pozice</a>
       <a href="#" onclick="openRegModal();return false">Pro zaměstnavatele</a>
       <a href="#">FAQ</a>
       <a href="#">Kontakt</a>
@@ -1142,11 +1142,11 @@ var heroTaglines = {
   salary: 'Zjisti co skutečně<br>vydělávají ostatní.',
   ai: 'Připrav se na<br>budoucnost.',
   job: 'Najděte práci, kam<br>doopravdy patříte.',
-  browse: 'Najděte práci, kam<br>doopravdy patříte.'
+  jobdetail: 'Najděte práci, kam<br>doopravdy patříte.'
 };
 function switchTab(tab, trackClick) {
   if(trackClick === undefined) trackClick = true;
-  ['salary','ai','job','browse'].forEach(function(t){
+  ['salary','ai','job','jobdetail'].forEach(function(t){
     document.getElementById('content-'+t).classList.remove('active');
     document.getElementById('tab-'+t).classList.remove('active');
   });
@@ -1156,7 +1156,7 @@ function switchTab(tab, trackClick) {
   var searchArea = document.getElementById('hero-search-area');
   var tagline = document.getElementById('hero-tagline');
   if(searchArea){
-    if(tab === 'job' || tab === 'browse'){
+    if(tab === 'job' || tab === 'jobdetail'){
       searchArea.classList.remove('hidden-area');
     } else {
       searchArea.classList.add('hidden-area');
@@ -1167,7 +1167,7 @@ function switchTab(tab, trackClick) {
   }
   history.replaceState(null, '', '#'+tab);
   if(trackClick){
-    var tabNames = {salary:'srovnej_mzdu', ai:'kdy_te_nahradi_ai', job:'najdi_praci', browse:'prochazet_pozice'};
+    var tabNames = {salary:'srovnej_mzdu', ai:'kdy_te_nahradi_ai', job:'najdi_praci', jobdetail:'prochazet_pozice'};
     trackEvent('tab_click', {tab_name: tabNames[tab] || tab});
   }
 }

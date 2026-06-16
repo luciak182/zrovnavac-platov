@@ -2106,9 +2106,15 @@ function trackEvent(eventName, params) {
     // ─────────────────────────────────────────────────────────────────────────────
     // REGISTRAČNÍ MODAL
     // ─────────────────────────────────────────────────────────────────────────────
-    function openRegModal(sourceEl) {
-        var pozice = (sourceEl && sourceEl.dataset && sourceEl.dataset.pozice) ? sourceEl.dataset.pozice : 'registrace';
-        trackEvent('nav_click', { nav_item: 'registrace', pozice: pozice });
+   function openRegModal(sourceEl) {
+    var pozice = (sourceEl && sourceEl.dataset && sourceEl.dataset.pozice) ? sourceEl.dataset.pozice : 'registrace';
+
+    // Explicitné logovanie kliknutia na kartu pozície
+    if (sourceEl && sourceEl.classList && sourceEl.classList.contains('jcard')) {
+        trackEvent('jcard_click', { pozice: pozice });
+    }
+
+    trackEvent('nav_click', { nav_item: 'registrace', pozice: pozice });
         // Predvyplníme email ak ho už máme
         const savedEmail = localStorage.getItem('userEmail') || '';
         document.getElementById('reg-email').value = savedEmail;

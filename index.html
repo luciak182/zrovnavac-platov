@@ -434,7 +434,7 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
       <button class="nav-tab active" id="tab-salary" onclick="switchTab('salary')">Srovnej mzdu</button>
       <button class="nav-tab" id="tab-ai" onclick="switchTab('ai')">Kdy tě nahradí AI?</button>
       <button class="nav-tab" id="tab-job" onclick="switchTab('job')">Najdi práci</button>
-      <button class="nav-tab" id="tab-browse" onclick="switchTab('jobdetail')">Procházet pozice</button>
+      <button class="nav-tab" id="tab-jobdetail" onclick="switchTab('jobdetail')">Procházet pozice</button>
     </div>
     <div class="nav-cta">
       <button class="btn-nav-ghost" onclick="trackEvent('nav_click',{nav_item:'karietni_centrum'})">📖 Kariérní centrum</button>
@@ -1172,7 +1172,7 @@ function switchTab(tab, trackClick) {
   }
 }
 (function(){
-  var valid = ['salary','ai','job','browse'];
+  var valid = ['salary','ai','job','jobdetail'];
   var hash = window.location.hash.replace('#','');
   var startTab = (valid.indexOf(hash) !== -1) ? hash : 'salary';
   switchTab(startTab, false);

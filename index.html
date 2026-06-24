@@ -1085,23 +1085,32 @@ footer{padding:48px 0 64px;border-top:1px solid var(--line-2)}
 <!-- REG MODAL -->
 <div class="modal-bg" id="reg-modal">
   <div class="modal-box">
-    <h2>Vytvořit profil</h2>
-    <p class="msub">Nahrajte CV a získejte mezi prvními přístup k pracovním nabídkám na míru.</p>
-    <div class="mrow">
-      <div style="flex:1"><label class="mlabel">Jméno</label><input type="text" id="reg-firstname" placeholder="Jan"></div>
-      <div style="flex:1"><label class="mlabel">Příjmení</label><input type="text" id="reg-lastname" placeholder="Novák"></div>
+    <div id="reg-form-view">
+      <h2>Vytvořit profil</h2>
+      <p class="msub">Nahrajte CV a získejte mezi prvními přístup k pracovním nabídkám na míru.</p>
+      <div class="mrow">
+        <div style="flex:1"><label class="mlabel">Jméno</label><input type="text" id="reg-firstname" placeholder="Jan"></div>
+        <div style="flex:1"><label class="mlabel">Příjmení</label><input type="text" id="reg-lastname" placeholder="Novák"></div>
+      </div>
+      <label class="mlabel">E-mail</label>
+      <input type="email" id="reg-email" placeholder="vas@email.com">
+      <label class="mlabel">Nahrát CV</label>
+      <label class="upload-zone">
+        <span style="font-size:28px;margin-bottom:6px">📄</span>
+        <span id="reg-file-label" style="font-size:13px;color:var(--ink-soft);font-weight:500">Klikněte pro nahrání nebo přetáhněte soubor</span>
+        <span style="font-size:11px;color:var(--ink-soft);margin-top:2px">PDF nebo Word (.pdf, .doc, .docx)</span>
+        <input type="file" id="reg-cv" accept=".pdf,.doc,.docx" style="display:none" onchange="updateFileLabel(this)">
+      </label>
+      <button class="btn-modal-primary" onclick="submitRegForm()" id="reg-submit-btn">Vytvořit profil</button>
+      <button class="btn-modal-cancel" onclick="closePopup('reg-modal')">Zrušit</button>
     </div>
-    <label class="mlabel">E-mail</label>
-    <input type="email" id="reg-email" placeholder="vas@email.com">
-    <label class="mlabel">Nahrát CV</label>
-    <label class="upload-zone">
-      <span style="font-size:28px;margin-bottom:6px">📄</span>
-      <span id="reg-file-label" style="font-size:13px;color:var(--ink-soft);font-weight:500">Klikněte pro nahrání nebo přetáhněte soubor</span>
-      <span style="font-size:11px;color:var(--ink-soft);margin-top:2px">PDF nebo Word (.pdf, .doc, .docx)</span>
-      <input type="file" id="reg-cv" accept=".pdf,.doc,.docx" style="display:none" onchange="updateFileLabel(this)">
-    </label>
-    <button class="btn-modal-primary" onclick="submitRegForm()" id="reg-submit-btn">Vytvořit profil</button>
-    <button class="btn-modal-cancel" onclick="closePopup('reg-modal')">Zrušit</button>
+    <div id="reg-success-view" style="display:none;text-align:center;padding:8px 4px 4px">
+      <div style="font-size:48px;margin-bottom:10px">🎉</div>
+      <h2 style="margin-bottom:12px">Děkujeme!</h2>
+      <p class="msub" style="margin-bottom:14px">Momentálně testujeme zájem o produkt, než ho naostro spustíme. Vážíme si toho, že jste mezi prvními.</p>
+      <p class="msub" style="margin-bottom:20px"><strong>Jakmile Práce v kanclu poběží, ozveme se vám e-mailem.</strong> Děkujeme za trpělivost.</p>
+      <button class="btn-modal-primary" onclick="closeRegSuccess()">Zavřít</button>
+    </div>
   </div>
 </div>
 
@@ -2026,7 +2035,7 @@ function trackEvent(eventName, params) {
         if (typeof gtag === 'function') {
             gtag('event', eventName, params);
 
-            // Google Ads konverzie
+            // Google Ads konverzia pre popup e-mail (bez deduplikácie)
             if (eventName === 'popup_email_submitted') {
                 gtag('event', 'conversion', {
                     send_to:  'AW-18205896793/2DiJCIH9-7gcENngn-lD',
@@ -2034,14 +2043,28 @@ function trackEvent(eventName, params) {
                     currency: 'CZK'
                 });
             }
-            if (eventName === 'registration_submitted') {
-                gtag('event', 'conversion', {
-                    send_to: 'AW-18205896793/wjZ3CJWQ-7gcENngn-lD'
-                });
+        }
+
+        // Reklamné konverzie z registrácie (Google Ads + Meta) — DEDUPLIKOVANÉ na prehliadač.
+        // GA4 event 'registration_submitted' vyššie sa loguje VŽDY (podržíme si hrubý počet
+        // pokusov vrátane resubmitov v GA4), ale konverziu do reklamných platforiem pošleme
+        // len RAZ za prehliadač cez localStorage flag. fbq je mimo gtag vetvy zámerne —
+        // Meta má fírovať aj keď je gtag blokovaný ad-blockerom.
+        if (eventName === 'registration_submitted') {
+            var alreadyConverted = false;
+            try { alreadyConverted = !!localStorage.getItem('regConverted'); } catch (e) {}
+            if (!alreadyConverted) {
+                try { localStorage.setItem('regConverted', '1'); } catch (e) {}
+                if (typeof gtag === 'function') {
+                    gtag('event', 'conversion', { send_to: 'AW-18205896793/wjZ3CJWQ-7gcENngn-lD' });
+                }
+                if (typeof fbq === 'function') {
+                    fbq('track', 'CompleteRegistration');
+                }
             }
         }
     } catch (e) {
-        // gtag blokováno rozšířením prohlížeče — ignorujeme
+        // gtag/fbq blokované rozšírením prehliadača — ignorujeme
     }
 }
 
@@ -2115,16 +2138,35 @@ function trackEvent(eventName, params) {
     }
 
     trackEvent('nav_click', { nav_item: 'registrace', pozice: pozice });
+        // Reset zpět na formulář (pro případ, že byl modal naposledy zavřen na success screenu)
+        document.getElementById('reg-success-view').style.display = 'none';
+        document.getElementById('reg-form-view').style.display = 'block';
         // Predvyplníme email ak ho už máme
         const savedEmail = localStorage.getItem('userEmail') || '';
         document.getElementById('reg-email').value = savedEmail;
         openPopup('reg-modal');
     }
 
+    // Zavření success screenu po registraci
+    function closeRegSuccess() {
+        closePopup('reg-modal');
+        document.getElementById('reg-success-view').style.display = 'none';
+        document.getElementById('reg-form-view').style.display = 'block';
+    }
+
     function updateFileLabel(input) {
         const label = document.getElementById('reg-file-label');
         if (input.files && input.files[0]) {
-            label.textContent = '✅ ' + input.files[0].name;
+            const file = input.files[0];
+            label.textContent = '✅ ' + file.name;
+            // Měření: úspěšně vybrané CV (varianta A — moment výběru souboru, nezávisle na odeslání)
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (['pdf', 'doc', 'docx'].includes(ext)) {
+                trackEvent('cv_uploaded', {
+                    file_type:    ext,
+                    file_size_kb: Math.round(file.size / 1024)
+                });
+            }
         }
     }
 
@@ -2153,12 +2195,14 @@ function trackEvent(eventName, params) {
             sessionStorage.setItem('emailConfirmed', 'yes');
             document.getElementById('user-email').value = email;
             trackEvent('registration_submitted', { has_cv: !!cv });
-            btn.innerText = 'Profil vytvořen ✓';
-            setTimeout(() => {
-                closePopup('reg-modal');
-                btn.innerText = 'Vytvořit profil';
-                btn.disabled  = false;
-            }, 1400);
+            // Označíme modal jako odeslaný, aby zavření success screenu nelogovalo popup_dismissed
+            document.getElementById('reg-modal').dataset.submitted = 'yes';
+            // Přepnutí na success screen (fake-door: zobrazí se vždy, i při tichém selhání backendu)
+            document.getElementById('reg-form-view').style.display = 'none';
+            document.getElementById('reg-success-view').style.display = 'block';
+            // Reset tlačítka pro případné další otevření formuláře
+            btn.innerText = 'Vytvořit profil';
+            btn.disabled  = false;
         }
 
         fetch('https://formspree.io/f/xjglozoq', {

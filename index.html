@@ -2195,6 +2195,7 @@ function trackEvent(eventName, params) {
             sessionStorage.setItem('emailConfirmed', 'yes');
             document.getElementById('user-email').value = email;
             trackEvent('registration_submitted', { has_cv: !!cv });
+              fbq('track', 'Lead', { content_name: 'cv_registration', has_cv: !!cv });
             // Označíme modal jako odeslaný, aby zavření success screenu nelogovalo popup_dismissed
             document.getElementById('reg-modal').dataset.submitted = 'yes';
             // Přepnutí na success screen (fake-door: zobrazí se vždy, i při tichém selhání backendu)
